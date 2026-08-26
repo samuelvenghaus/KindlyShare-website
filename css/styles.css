@@ -214,30 +214,17 @@ button {
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  font-size: 20px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--text-primary);
   flex-shrink: 0;
 }
 
-.logo-mark {
-  display: inline-flex;
-  color: var(--accent);
-}
-
-.logo-mark svg {
-  width: 26px;
+.logo-img {
   height: 26px;
+  width: auto;
+  display: block;
 }
 
-.logo-tm {
-  font-size: 11px;
-  font-weight: 600;
-  vertical-align: super;
-  color: var(--text-tertiary);
-  margin-left: 1px;
+.footer-brand .logo-img {
+  height: 24px;
 }
 
 .main-nav {
