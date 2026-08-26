@@ -358,6 +358,27 @@ button {
   background: var(--bg-elevated);
 }
 
+.section-light {
+  --bg: #f2f1ee;
+  --bg-elevated: #ffffff;
+  --bg-elevated-2: #f5f4f1;
+  --bg-elevated-3: #eceae5;
+  --border: rgba(10, 10, 12, 0.09);
+  --border-strong: rgba(10, 10, 12, 0.18);
+  --text-primary: #0a0a0c;
+  --text-secondary: #55555f;
+  --text-tertiary: #85858c;
+  --accent: #a15c00;
+  --accent-soft: rgba(161, 92, 0, 0.12);
+  background: var(--bg);
+  color: var(--text-primary);
+}
+
+.section-light .icon-tile:not(.tile-outline) {
+  background: #ffc72c;
+  color: #14110a;
+}
+
 .hero {
   padding: 76px 0 60px;
 }
