@@ -1479,6 +1479,7 @@ table.compare-table {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 50% 8%;
 }
 
 .team-photo-fallback {
