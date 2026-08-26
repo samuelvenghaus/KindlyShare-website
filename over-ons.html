@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Over ons — KindlyShare™</title>
+<meta name="description" content="KindlyShare™ helpt bedrijven om overal waar klanten praten te luisteren, begrijpen en actie te nemen.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/styles.css">
+<script>
+  function handleTeamPhotoError(img) {
+    var wrap = img.closest('.team-photo-wrap');
+    if (!wrap) return;
+    img.remove();
+    var initials = document.createElement('span');
+    initials.className = 'team-photo-fallback';
+    initials.textContent = wrap.dataset.initials || '';
+    wrap.appendChild(initials);
+  }
+</script>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-mark">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="7" r="2.2" fill="currentColor"/><circle cx="8" cy="17" r="2.2" fill="currentColor"/><path d="M14 6.5L20 12L14 17.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="logo-text">KindlyShare<span class="logo-tm">™</span></span>
+    </a>
+    <nav class="main-nav" aria-label="Hoofdmenu">
+      <a href="index.html" class="nav-link">Product</a>
+      <a href="oplossingen.html" class="nav-link">Oplossingen
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="prijzen.html" class="nav-link">Prijzen</a>
+      <a href="over-ons.html" class="nav-link active">Over ons</a>
+      <span class="nav-link disabled" title="Binnenkort beschikbaar">Resources
+        <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+    </nav>
+    <div class="header-actions">
+      <a href="#" class="btn btn-ghost">Inloggen</a>
+      <a href="#" class="btn btn-primary">Plan een demo</a>
+    </div>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false"><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-eyebrow-row">
+          <span class="badge">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M2.5 20a6.5 6.5 0 0113 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="17.5" cy="9" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M15.5 20a5 5 0 016.7-4.7" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Over KindlyShare
+          </span>
+        </div>
+        <h1>Wij zetten feedback om in <span class="accent-text">groei</span>.</h1>
+        <p class="lead">KindlyShare™ helpt bedrijven om overal waar klanten praten te luisteren, begrijpen en actie te nemen. Van losse feedback naar duidelijke inzichten die echte impact maken.</p>
+        <div class="hero-cta-row">
+          <a href="#" class="btn btn-primary">Plan een demo
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="dashboard-mock compact" aria-hidden="true">
+        <div class="dm-main">
+          <div class="dm-panel">
+            <h5>Feedback Overzicht</h5>
+            <div class="dm-content-row">
+              <div class="dm-donut-wrap" style="align-items:center;">
+                <div class="dm-donut" style="width:120px;height:120px;background: conic-gradient(var(--green) 0% 57%, var(--blue) 57% 76%, var(--red) 76% 88%, var(--accent) 88% 100%);">
+                  <span class="dm-donut-total" style="font-size:16px;">2.847<br><span style="font-weight:500;color:var(--text-tertiary);font-size:11px;">Totaal</span></span>
+                </div>
+              </div>
+              <ul class="dm-legend" style="font-size:12.5px;gap:10px;justify-content:center;">
+                <li><span class="dot" style="width:9px;height:9px;background:var(--green)"></span>Praise <b>64.9%</b></li>
+                <li><span class="dot" style="width:9px;height:9px;background:var(--blue)"></span>Interest <b>21.9%</b></li>
+                <li><span class="dot" style="width:9px;height:9px;background:var(--red)"></span>Problems <b>13.3%</b></li>
+                <li><span class="dot" style="width:9px;height:9px;background:var(--accent)"></span>Solutions <b>13.3%</b></li>
+              </ul>
+            </div>
+          </div>
+          <div class="dm-panel" style="margin-top:14px;">
+            <h5>Feedback trend</h5>
+            <svg class="dm-trend-svg" style="height:90px;" viewBox="0 0 320 90" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="trendFill2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="var(--green)" stop-opacity="0.35"/>
+                  <stop offset="100%" stop-color="var(--green)" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <path d="M0 70 L40 64 L80 50 L120 56 L160 36 L200 42 L240 22 L280 28 L320 10 L320 90 L0 90 Z" fill="url(#trendFill2)"/>
+              <path d="M0 70 L40 64 L80 50 L120 56 L160 36 L200 42 L240 22 L280 28 L320 10" fill="none" stroke="var(--green)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="dm-stat-row" style="grid-template-columns:repeat(3,1fr);margin-top:14px;margin-bottom:0;">
+            <div class="dm-stat"><div class="label">Positieve feedback</div><div class="value">1.846</div><span class="delta up">↑ 64.9%</span></div>
+            <div class="dm-stat"><div class="label">Problemen</div><div class="value">623</div><span class="delta up">↑ 21.9%</span></div>
+            <div class="dm-stat"><div class="label">Oplossingen</div><div class="value">378</div><span class="delta up">↑ 13.3%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-border-top section-alt">
+    <div class="container">
+      <div class="mission-grid">
+        <div class="mission-intro">
+          <h3>Onze missie</h3>
+          <p>Wij geloven dat elk bedrijf kan groeien door écht te luisteren naar zijn klanten. Onze AI maakt feedback begrijpelijk, prioriteitmatig en direct toepasbaar.</p>
+        </div>
+        <div class="mission-item">
+          <span class="icon-tile tile-outline" style="margin-bottom:0;">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.5c.6.5 1 1.3 1 2.1V16h6v-.4c0-.8.4-1.6 1-2.1A6 6 0 0012 3z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <h4>Slimme analyse</h4>
+          <p>AI die duizenden feedbacks categoriseert en de essentie eruit haalt.</p>
+        </div>
+        <div class="mission-item">
+          <span class="icon-tile tile-outline" style="margin-bottom:0;">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          </span>
+          <h4>Directe alerts</h4>
+          <p>Realtime meldingen bij negatieve trends of terugkerende problemen.</p>
+        </div>
+        <div class="mission-item">
+          <span class="icon-tile tile-outline" style="margin-bottom:0;">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M3 17l6-6 4 4 8-8M21 11V7h-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <h4>Actiegerichte inzichten</h4>
+          <p>Van data naar duidelijke acties die klanttevredenheid en groei stimuleren.</p>
+        </div>
+        <div class="mission-item">
+          <span class="icon-tile tile-outline" style="margin-bottom:0;">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11z" stroke="currentColor" stroke-width="1.6"/></svg>
+          </span>
+          <h4>Privacy & veiligheid</h4>
+          <p>Wij beschermen jouw data met de hoogste standaarden en transparantie.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-border-top">
+    <div class="container">
+      <div class="team-section">
+        <div class="team-copy">
+          <span class="eyebrow">Het team</span>
+          <h3>Het team achter KindlyShare</h3>
+          <p>Een team van ondernemers, developers en data-experts met één doel: bedrijven helpen hun klanten écht te begrijpen en betere beslissingen te nemen.</p>
+          <a href="#" class="btn btn-outline">Werken bij KindlyShare
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+        <div class="team-cards">
+          <div class="team-card">
+            <div class="team-photo-wrap" data-initials="SV">
+              <img src="assets/team/samuel-venghaus.jpg" alt="Samuel Venghaus, CEO & Founder van KindlyShare" onerror="handleTeamPhotoError(this)">
+            </div>
+            <h4>Samuel Venghaus</h4>
+            <p class="role">CEO & Founder</p>
+            <p class="bio">Ondernemer in hart en nieren. Gedreven door groei, strategie en klantimpact.</p>
+            <a class="social-link" href="#" aria-label="Samuel Venghaus op LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.9 8.4H3.6V20h3.3V8.4zM5.3 3.7a1.9 1.9 0 100 3.8 1.9 1.9 0 000-3.8zM20.4 20h-3.3v-6.3c0-1.5-.5-2.5-1.9-2.5-1 0-1.6.7-1.9 1.4-.1.2-.1.6-.1.9V20H10s.1-10.6 0-11.6h3.3v1.6c.4-.7 1.2-1.7 3-1.7 2.2 0 3.9 1.4 3.9 4.5V20z"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <p class="about-tagline">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M20.8 8.6c0 5.6-8.8 10.4-8.8 10.4S3.2 14.2 3.2 8.6a4.8 4.8 0 019-2.2 4.8 4.8 0 018.6 2.2z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        Gebouwd met passie voor onze klanten. Elke dag een beetje beter.
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a href="index.html" class="logo">
+          <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="7" r="2.2" fill="currentColor"/><circle cx="8" cy="17" r="2.2" fill="currentColor"/><path d="M14 6.5L20 12L14 17.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          <span class="logo-text">KindlyShare<span class="logo-tm">™</span></span>
+        </a>
+        <p>AI-gedreven feedbackanalyse waarmee je écht begrijpt wat je klanten nodig hebben.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h5>Product</h5>
+          <a href="index.html">Product</a>
+          <a href="oplossingen.html">Oplossingen</a>
+          <a href="prijzen.html">Prijzen</a>
+        </div>
+        <div class="footer-col">
+          <h5>Bedrijf</h5>
+          <a href="over-ons.html">Over ons</a>
+          <span>Resources</span>
+          <a href="#">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 KindlyShare™. Alle rechten voorbehouden.</span>
+      <div class="footer-social">
+        <a class="social-link" href="#" aria-label="LinkedIn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.9 8.4H3.6V20h3.3V8.4zM5.3 3.7a1.9 1.9 0 100 3.8 1.9 1.9 0 000-3.8zM20.4 20h-3.3v-6.3c0-1.5-.5-2.5-1.9-2.5-1 0-1.6.7-1.9 1.4-.1.2-.1.6-.1.9V20H10s.1-10.6 0-11.6h3.3v1.6c.4-.7 1.2-1.7 3-1.7 2.2 0 3.9 1.4 3.9 4.5V20z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
