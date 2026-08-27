@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { Smile, Meh, Frown } from "lucide-react";
-import type { FeedbackType, Sentiment } from "@/lib/types";
-import { FEEDBACK_TYPE_LABELS, SENTIMENT_LABELS } from "@/lib/dummy-data";
+import type { Sentiment } from "@/lib/types";
+import { SENTIMENT_LABELS } from "@/lib/dummy-data";
 
 const sentimentStyles: Record<Sentiment, string> = {
   positive: "bg-positive-bg text-positive",
@@ -26,26 +26,6 @@ export function SentimentBadge({ sentiment }: { sentiment: Sentiment }) {
     >
       <Icon size={14} />
       {SENTIMENT_LABELS[sentiment]}
-    </span>
-  );
-}
-
-const feedbackTypeStyles: Record<FeedbackType, string> = {
-  praise: "bg-positive-bg text-positive",
-  interest: "bg-interest-bg text-interest",
-  problem: "bg-negative-bg text-negative",
-  solution: "bg-solution-bg text-solution",
-};
-
-export function FeedbackTypeBadge({ type }: { type: FeedbackType }) {
-  return (
-    <span
-      className={clsx(
-        "inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium",
-        feedbackTypeStyles[type]
-      )}
-    >
-      {FEEDBACK_TYPE_LABELS[type]}
     </span>
   );
 }

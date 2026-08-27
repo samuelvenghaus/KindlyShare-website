@@ -1,14 +1,4 @@
-import type {
-  Alert,
-  ChannelStat,
-  DailyTrendPoint,
-  FeedbackType,
-  Platform,
-  Review,
-  Sentiment,
-  TopicStat,
-  TrendPoint,
-} from "./types";
+import type { FeedbackType, Platform, Review, Sentiment, TopicStat, TrendPoint } from "./types";
 
 export const PLATFORM_LABELS: Record<Platform, string> = {
   google: "Google Reviews",
@@ -33,102 +23,6 @@ export const SENTIMENT_LABELS: Record<Sentiment, string> = {
   neutral: "Neutraal",
   negative: "Negatief",
 };
-
-export const FEEDBACK_TYPE_LABELS: Record<FeedbackType, string> = {
-  praise: "Praise",
-  interest: "Interest",
-  problem: "Problems",
-  solution: "Solutions",
-};
-
-// ---- Dashboard ----
-
-export const dashboardKpis = {
-  totalFeedback: { value: 2847, changePercent: 12.5 },
-  positiveFeedback: { value: 1846, changePercent: 64.9 },
-  problems: { value: 623, changePercent: 21.9 },
-  solutions: { value: 378, changePercent: 13.3 },
-};
-
-export const feedbackTypeBreakdown: { type: FeedbackType; count: number; percentage: number }[] = [
-  { type: "praise", count: 1847, percentage: 64.9 },
-  { type: "interest", count: 621, percentage: 21.8 },
-  { type: "problem", count: 245, percentage: 8.6 },
-  { type: "solution", count: 134, percentage: 4.7 },
-];
-
-const DUTCH_MONTHS_SHORT = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
-
-function generateDailyTrend(startDate: string, days: number): DailyTrendPoint[] {
-  const start = new Date(startDate);
-  return Array.from({ length: days }, (_, i) => {
-    const d = new Date(start);
-    d.setDate(start.getDate() + i);
-    const base = 650 + (1500 - 650) * (i / (days - 1));
-    const wave = 95 * Math.sin(i * 0.85) + 45 * Math.sin(i * 2.1 + 1);
-    return {
-      date: `${d.getDate()} ${DUTCH_MONTHS_SHORT[d.getMonth()]}`,
-      value: Math.max(0, Math.round(base + wave)),
-    };
-  });
-}
-
-// 29 dagelijkse punten van 12 mei t/m 9 jun; labels op de weekgrenzen
-// (index 0, 7, 14, 21, 28) tonen exact 12 mei, 19 mei, 26 mei, 2 jun, 9 jun.
-export const dashboardFeedbackTrend: DailyTrendPoint[] = generateDailyTrend("2024-05-12", 29);
-export const dashboardFeedbackTrendTickInterval = 6;
-
-export const dashboardTopTopics: TopicStat[] = [
-  { label: "Snelheid van service", count: 0, percentage: 76 },
-  { label: "Vriendelijkheid", count: 0, percentage: 68 },
-  { label: "Prijs / kwaliteit", count: 0, percentage: 46 },
-  { label: "Communicatie", count: 0, percentage: 38 },
-  { label: "Product kwaliteit", count: 0, percentage: 31 },
-];
-
-export const dashboardChannels: ChannelStat[] = [
-  { platform: "google", count: 1234, percentage: 43.4 },
-  { platform: "trustpilot", count: 856, percentage: 30.1 },
-  { platform: "facebook", count: 432, percentage: 15.2 },
-  { platform: "tiktok", count: 223, percentage: 7.8 },
-  { platform: "overig", count: 102, percentage: 3.5 },
-];
-
-export const dashboardRecentFeedback: Review[] = [
-  {
-    id: "recent-1",
-    platform: "google",
-    author: "Lisa de Vries",
-    rating: 5,
-    text: "Snelle levering en top service!",
-    sentiment: "positive",
-    feedbackType: "praise",
-    topics: ["Snelle levering"],
-    minutesAgo: 2,
-  },
-  {
-    id: "recent-2",
-    platform: "tiktok",
-    author: "@thomasv_",
-    rating: 3,
-    text: "Product is goed, maar retourproces kan beter.",
-    sentiment: "negative",
-    feedbackType: "problem",
-    topics: ["Retourproces"],
-    minutesAgo: 15,
-  },
-  {
-    id: "recent-3",
-    platform: "trustpilot",
-    author: "Mark Jansen",
-    rating: 5,
-    text: "Geweldige klantenservice en snelle oplossing. Zeer tevreden!",
-    sentiment: "positive",
-    feedbackType: "praise",
-    topics: ["Klantenservice"],
-    minutesAgo: 32,
-  },
-];
 
 // ---- Feedback-pagina: tabs (koppen tonen de "aantal reviews" uit de mockup) ----
 
@@ -491,25 +385,15 @@ export const allReviews: Review[] = (
   .flatMap((platform) => platformReviews[platform])
   .sort((a, b) => a.minutesAgo - b.minutesAgo);
 
-// ---- Probleemmelding ----
-
-export const exampleAlert: Alert = {
-  id: "alert-1",
-  topicLabel: "Lange wachttijden",
-  increasePercentage: 47,
-  windowDays: 3,
-  priority: "high",
-  reviewCount: 56,
-  impact:
-    "Klanten noemen steeds vaker lange wachttijden bij de klantenservice. Dit kan leiden tot een dalende klanttevredenheid en meer negatieve reviews op korte termijn.",
-  aiSuggestion:
-    "Overweeg extra bezetting in te plannen tijdens piekmomenten en een chatbot in te zetten voor veelgestelde vragen, zodat de gemiddelde wachttijd daalt.",
-};
-
 export function formatTimeAgo(minutesAgo: number): string {
   if (minutesAgo < 60) return `${minutesAgo} min geleden`;
   const hours = Math.floor(minutesAgo / 60);
   if (hours < 24) return `${hours} ${hours === 1 ? "uur" : "uur"} geleden`;
   const days = Math.floor(hours / 24);
   return `${days} ${days === 1 ? "dag" : "dagen"} geleden`;
+}
+
+/** Minuten sinds `date`, tov het moment van aanroepen. */
+export function minutesSince(date: Date): number {
+  return Math.max(0, Math.round((Date.now() - date.getTime()) / 60000));
 }

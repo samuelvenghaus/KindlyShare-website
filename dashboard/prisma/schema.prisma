@@ -75,9 +75,12 @@ model PlatformConnection {
   platform          Platform
   externalAccountId String?   @map("external_account_id")
   accessToken       String?   @map("access_token")
+  refreshToken      String?   @map("refresh_token")
+  tokenExpiresAt    DateTime? @map("token_expires_at")
   lastSyncedAt      DateTime? @map("last_synced_at")
   status            String    @default("active")
 
+  @@unique([companyId, platform, externalAccountId])
   @@index([companyId])
   @@map("platform_connections")
 }
