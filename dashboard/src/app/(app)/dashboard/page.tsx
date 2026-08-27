@@ -5,15 +5,16 @@ import { Card, CardHeader } from "@/components/ui/Card";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { FeedbackTypeBadge } from "@/components/ui/Badge";
 import { DonutChart } from "@/components/charts/DonutChart";
-import { TrendLineChart } from "@/components/charts/TrendLineChart";
+import { AreaTrendChart } from "@/components/charts/AreaTrendChart";
 import { PlatformIcon } from "@/components/icons/PlatformIcon";
 import { ProblemAlert } from "@/components/alerts/ProblemAlert";
 import {
   dashboardChannels,
+  dashboardFeedbackTrend,
+  dashboardFeedbackTrendTickInterval,
   dashboardKpis,
   dashboardRecentFeedback,
   dashboardTopTopics,
-  dashboardTrend,
   exampleAlert,
   feedbackTypeBreakdown,
   formatTimeAgo,
@@ -122,9 +123,10 @@ export default function DashboardPage() {
               </button>
             }
           />
-          <TrendLineChart
-            data={dashboardTrend}
-            lines={[{ key: "positive", color: CHART_COLORS.positive, label: "Positief" }]}
+          <AreaTrendChart
+            data={dashboardFeedbackTrend}
+            color={CHART_COLORS.positive}
+            tickInterval={dashboardFeedbackTrendTickInterval}
           />
         </Card>
       </div>

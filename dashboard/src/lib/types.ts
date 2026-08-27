@@ -44,6 +44,11 @@ export interface TrendPoint {
   neutral: number;
 }
 
+export interface DailyTrendPoint {
+  date: string;
+  value: number;
+}
+
 export interface KpiStat {
   label: string;
   value: number;

@@ -1,6 +1,7 @@
 import type {
   Alert,
   ChannelStat,
+  DailyTrendPoint,
   FeedbackType,
   Platform,
   Review,
@@ -56,13 +57,26 @@ export const feedbackTypeBreakdown: { type: FeedbackType; count: number; percent
   { type: "solution", count: 134, percentage: 4.7 },
 ];
 
-export const dashboardTrend: TrendPoint[] = [
-  { date: "12 mei", positive: 640, negative: 210, neutral: 90 },
-  { date: "19 mei", positive: 820, negative: 260, neutral: 110 },
-  { date: "26 mei", positive: 760, negative: 300, neutral: 100 },
-  { date: "2 jun", positive: 1080, negative: 340, neutral: 130 },
-  { date: "9 jun", positive: 1490, negative: 380, neutral: 150 },
-];
+const DUTCH_MONTHS_SHORT = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
+
+function generateDailyTrend(startDate: string, days: number): DailyTrendPoint[] {
+  const start = new Date(startDate);
+  return Array.from({ length: days }, (_, i) => {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    const base = 650 + (1500 - 650) * (i / (days - 1));
+    const wave = 95 * Math.sin(i * 0.85) + 45 * Math.sin(i * 2.1 + 1);
+    return {
+      date: `${d.getDate()} ${DUTCH_MONTHS_SHORT[d.getMonth()]}`,
+      value: Math.max(0, Math.round(base + wave)),
+    };
+  });
+}
+
+// 29 dagelijkse punten van 12 mei t/m 9 jun; labels op de weekgrenzen
+// (index 0, 7, 14, 21, 28) tonen exact 12 mei, 19 mei, 26 mei, 2 jun, 9 jun.
+export const dashboardFeedbackTrend: DailyTrendPoint[] = generateDailyTrend("2024-05-12", 29);
+export const dashboardFeedbackTrendTickInterval = 6;
 
 export const dashboardTopTopics: TopicStat[] = [
   { label: "Snelheid van service", count: 0, percentage: 76 },
