@@ -21,6 +21,7 @@ import {
   PLATFORM_SHORT_LABELS,
 } from "@/lib/dummy-data";
 import { CHART_COLORS, PLATFORM_COLORS } from "@/lib/chart-colors";
+import { getSession } from "@/lib/auth";
 
 const feedbackTypeColor: Record<string, string> = {
   praise: CHART_COLORS.positive,
@@ -36,7 +37,10 @@ const feedbackTypeLabel: Record<string, string> = {
   solution: "Solutions",
 };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const session = await getSession();
+  const firstName = session?.name.split(" ")[0] ?? "";
+
   const totalFeedbackType = feedbackTypeBreakdown.reduce((sum, item) => sum + item.count, 0);
   const totalChannels = dashboardChannels.reduce((sum, item) => sum + item.count, 0);
 
@@ -44,7 +48,7 @@ export default function DashboardPage() {
     <>
       <PageHeader
         title="Dashboard"
-        subtitle="Welkom terug, Samuel! 👋"
+        subtitle={`Welkom terug${firstName ? `, ${firstName}` : ""}! 👋`}
         actions={
           <>
             <DateRangeButton />

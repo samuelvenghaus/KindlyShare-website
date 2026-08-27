@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { Calendar, ChevronDown, SlidersHorizontal, Bell, LogOut, User } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
+import { useCurrentUser } from "@/lib/current-user-context";
+import { logout } from "@/lib/actions/auth-actions";
+
+const ROLE_LABELS = { owner: "Eigenaar", member: "Teamlid" } as const;
 
 export function DateRangeButton({ label = "12 mei - 12 jun 2024" }: { label?: string }) {
   return (
@@ -59,7 +63,8 @@ export function NotificationBell({ count = 2 }: { count?: number }) {
   );
 }
 
-export function UserMenu({ name = "Samuel Venghaus", role = "CEO" }: { name?: string; role?: string }) {
+export function UserMenu() {
+  const { name, role } = useCurrentUser();
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
@@ -67,7 +72,7 @@ export function UserMenu({ name = "Samuel Venghaus", role = "CEO" }: { name?: st
         <Avatar name={name} size={36} />
         <span className="hidden text-left sm:block">
           <span className="block text-sm font-medium leading-tight text-foreground">{name}</span>
-          <span className="block text-xs leading-tight text-muted">{role}</span>
+          <span className="block text-xs leading-tight text-muted">{ROLE_LABELS[role]}</span>
         </span>
         <ChevronDown size={14} className="hidden text-muted sm:block" />
       </button>
@@ -78,9 +83,14 @@ export function UserMenu({ name = "Samuel Venghaus", role = "CEO" }: { name?: st
             <button className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-foreground hover:bg-surface">
               <User size={15} className="text-muted" /> Mijn profiel
             </button>
-            <button className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-negative hover:bg-surface">
-              <LogOut size={15} /> Uitloggen
-            </button>
+            <form action={logout}>
+              <button
+                type="submit"
+                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-negative hover:bg-surface"
+              >
+                <LogOut size={15} /> Uitloggen
+              </button>
+            </form>
           </div>
         </>
       )}

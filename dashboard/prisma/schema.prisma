@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Platform {
+  google
+  trustpilot
+  app_store
+  facebook
+  tiktok
+  instagram
+  overig
+}
+
+enum Sentiment {
+  positive
+  neutral
+  negative
+}
+
+enum FeedbackType {
+  praise
+  interest
+  problem
+  solution
+}
+
+enum Priority {
+  low
+  medium
+  high
+}
+
+enum UserRole {
+  owner
+  member
+}
+
+model Company {
+  id                  String               @id @default(uuid())
+  name                String
+  createdAt           DateTime             @default(now()) @map("created_at")
+  users               User[]
+  platformConnections PlatformConnection[]
+  reviews             Review[]
+  topics              Topic[]
+  alerts              Alert[]
+
+  @@map("companies")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId    String   @map("company_id")
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  role         UserRole @default(owner)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([companyId])
+  @@map("users")
+}
+
+model PlatformConnection {
+  id                String    @id @default(uuid())
+  company           Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId         String    @map("company_id")
+  platform          Platform
+  externalAccountId String?   @map("external_account_id")
+  accessToken       String?   @map("access_token")
+  lastSyncedAt      DateTime? @map("last_synced_at")
+  status            String    @default("active")
+
+  @@index([companyId])
+  @@map("platform_connections")
+}
+
+model Review {
+  id                String        @id @default(uuid())
+  company           Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId         String        @map("company_id")
+  platform          Platform
+  externalReviewId  String        @map("external_review_id")
+  author            String?
+  rating            Decimal?      @db.Decimal(2, 1)
+  text              String?
+  postedAt          DateTime?     @map("posted_at")
+  fetchedAt         DateTime      @default(now()) @map("fetched_at")
+  sentiment         Sentiment?
+  feedbackType      FeedbackType? @map("feedback_type")
+  topics            ReviewTopic[]
+
+  @@unique([platform, externalReviewId])
+  @@index([companyId])
+  @@map("reviews")
+}
+
+model Topic {
+  id        String        @id @default(uuid())
+  company   Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String        @map("company_id")
+  label     String
+  reviews   ReviewTopic[]
+  alerts    Alert[]
+
+  @@unique([companyId, label])
+  @@map("topics")
+}
+
+model ReviewTopic {
+  review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId String @map("review_id")
+  topic    Topic  @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topicId  String @map("topic_id")
+
+  @@id([reviewId, topicId])
+  @@map("review_topics")
+}
+
+model Alert {
+  id                String   @id @default(uuid())
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId         String   @map("company_id")
+  topic             Topic?   @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  topicId           String?  @map("topic_id")
+  reviewCount       Int      @map("review_count")
+  timeWindowDays    Int      @map("time_window_days")
+  increasePercentage Decimal @map("increase_percentage") @db.Decimal(5, 1)
+  priority          Priority
+  aiSuggestion      String?  @map("ai_suggestion")
+  createdAt         DateTime @default(now()) @map("created_at")
+  resolved          Boolean  @default(false)
+
+  @@index([companyId])
+  @@map("alerts")
+}
