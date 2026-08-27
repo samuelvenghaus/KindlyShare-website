@@ -5,6 +5,7 @@ import { listReviews } from "./business-profile";
 
 export interface SyncResult {
   connectionId: string;
+  companyId: string;
   fetched: number;
   created: number;
   updated: number;
@@ -69,22 +70,5 @@ export async function syncGoogleConnection(connectionId: string): Promise<SyncRe
     data: { lastSyncedAt: new Date() },
   });
 
-  return { connectionId, fetched: reviews.length, created, updated };
-}
-
-export async function syncAllGoogleConnections(): Promise<SyncResult[]> {
-  const connections = await prisma.platformConnection.findMany({
-    where: { platform: "google", status: "active" },
-    select: { id: true },
-  });
-
-  const results: SyncResult[] = [];
-  for (const connection of connections) {
-    try {
-      results.push(await syncGoogleConnection(connection.id));
-    } catch (err) {
-      console.error(`Sync mislukt voor koppeling ${connection.id}:`, err);
-    }
-  }
-  return results;
+  return { connectionId, companyId: connection.companyId, fetched: reviews.length, created, updated };
 }

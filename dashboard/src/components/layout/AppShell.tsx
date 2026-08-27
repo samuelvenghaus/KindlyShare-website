@@ -5,13 +5,13 @@ import Image from "next/image";
 import { Menu } from "lucide-react";
 import { Sidebar, MobileSidebar } from "./Sidebar";
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({ children, alertCount = 0 }: { children: ReactNode; alertCount?: number }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
-      <MobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <Sidebar alertCount={alertCount} />
+      <MobileSidebar open={mobileOpen} onClose={() => setMobileOpen(false)} alertCount={alertCount} />
 
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-center gap-3 border-b border-border px-4 py-4 md:hidden">

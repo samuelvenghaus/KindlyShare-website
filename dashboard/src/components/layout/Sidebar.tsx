@@ -21,13 +21,13 @@ const NAV_ITEMS = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
   { href: "/analyse", label: "Analyse", icon: BarChart3 },
-  { href: "/alerts", label: "Alerts", icon: Bell, badge: 2 },
+  { href: "/alerts", label: "Alerts", icon: Bell },
   { href: "/rapporten", label: "Rapporten", icon: FileText },
   { href: "/kanalen", label: "Kanalen", icon: Radio },
   { href: "/instellingen", label: "Instellingen", icon: Settings },
 ];
 
-function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarContent({ onNavigate, alertCount = 0 }: { onNavigate?: () => void; alertCount?: number }) {
   const pathname = usePathname();
 
   return (
@@ -42,6 +42,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
         {NAV_ITEMS.map((item) => {
           const active = pathname === item.href || pathname?.startsWith(`${item.href}/`);
           const Icon = item.icon;
+          const badge = item.href === "/alerts" && alertCount > 0 ? alertCount : null;
           return (
             <Link
               key={item.href}
@@ -58,9 +59,9 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
                 <Icon size={18} strokeWidth={2} />
                 {item.label}
               </span>
-              {item.badge ? (
+              {badge ? (
                 <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-negative px-1 text-[11px] font-semibold text-white">
-                  {item.badge}
+                  {badge}
                 </span>
               ) : null}
             </Link>
@@ -88,17 +89,25 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function Sidebar() {
+export function Sidebar({ alertCount = 0 }: { alertCount?: number }) {
   return (
     <aside className="hidden w-64 shrink-0 border-r border-border bg-background md:block">
       <div className="sticky top-0 h-screen">
-        <SidebarContent />
+        <SidebarContent alertCount={alertCount} />
       </div>
     </aside>
   );
 }
 
-export function MobileSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
+export function MobileSidebar({
+  open,
+  onClose,
+  alertCount = 0,
+}: {
+  open: boolean;
+  onClose: () => void;
+  alertCount?: number;
+}) {
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 md:hidden">
@@ -111,7 +120,7 @@ export function MobileSidebar({ open, onClose }: { open: boolean; onClose: () =>
         >
           <X size={18} />
         </button>
-        <SidebarContent onNavigate={onClose} />
+        <SidebarContent onNavigate={onClose} alertCount={alertCount} />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import type { Platform, Sentiment } from "@/lib/types";
+import type { FeedbackType, Platform, Sentiment } from "@/lib/types";
 
 const PERIOD_DAYS = 30;
 const DUTCH_MONTHS_SHORT = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
@@ -13,9 +13,13 @@ export interface DashboardKpi {
 export interface DashboardData {
   hasConnections: boolean;
   hasReviews: boolean;
+  hasClassifiedData: boolean;
   totalFeedback: DashboardKpi;
   positiveFeedback: DashboardKpi;
   problems: DashboardKpi;
+  solutions: DashboardKpi;
+  feedbackTypeBreakdown: { type: FeedbackType; count: number }[];
+  topTopics: { label: string; count: number }[];
   channels: { platform: Platform; count: number; percentage: number }[];
   recentReviews: {
     id: string;
@@ -23,6 +27,7 @@ export interface DashboardData {
     author: string | null;
     text: string | null;
     sentiment: Sentiment | null;
+    feedbackType: FeedbackType | null;
     minutesAgo: number;
   }[];
   trend: { date: string; value: number }[];
@@ -55,26 +60,47 @@ export async function getDashboardData(companyId: string): Promise<DashboardData
   const periodStart = new Date(now.getTime() - PERIOD_DAYS * 24 * 60 * 60 * 1000);
   const previousPeriodStart = new Date(periodStart.getTime() - PERIOD_DAYS * 24 * 60 * 60 * 1000);
 
-  const [connectionCount, totalReviewCount, currentPeriodReviews, previousPeriodReviews, channelCounts, recent] =
-    await Promise.all([
-      prisma.platformConnection.count({ where: { companyId } }),
-      prisma.review.count({ where: { companyId } }),
-      prisma.review.findMany({
-        where: { companyId, postedAt: { gte: periodStart } },
-        select: { sentiment: true, rating: true, postedAt: true },
-      }),
-      prisma.review.findMany({
-        where: { companyId, postedAt: { gte: previousPeriodStart, lt: periodStart } },
-        select: { sentiment: true, rating: true },
-      }),
-      prisma.review.groupBy({ by: ["platform"], where: { companyId }, _count: { _all: true } }),
-      prisma.review.findMany({
-        where: { companyId },
-        orderBy: [{ postedAt: "desc" }],
-        take: 5,
-        select: { id: true, platform: true, author: true, text: true, sentiment: true, rating: true, postedAt: true, fetchedAt: true },
-      }),
-    ]);
+  const [
+    connectionCount,
+    totalReviewCount,
+    currentPeriodReviews,
+    previousPeriodReviews,
+    channelCounts,
+    recent,
+    periodTopicLinks,
+  ] = await Promise.all([
+    prisma.platformConnection.count({ where: { companyId } }),
+    prisma.review.count({ where: { companyId } }),
+    prisma.review.findMany({
+      where: { companyId, postedAt: { gte: periodStart } },
+      select: { sentiment: true, rating: true, postedAt: true, feedbackType: true },
+    }),
+    prisma.review.findMany({
+      where: { companyId, postedAt: { gte: previousPeriodStart, lt: periodStart } },
+      select: { sentiment: true, rating: true, feedbackType: true },
+    }),
+    prisma.review.groupBy({ by: ["platform"], where: { companyId }, _count: { _all: true } }),
+    prisma.review.findMany({
+      where: { companyId },
+      orderBy: [{ postedAt: "desc" }],
+      take: 5,
+      select: {
+        id: true,
+        platform: true,
+        author: true,
+        text: true,
+        sentiment: true,
+        rating: true,
+        postedAt: true,
+        fetchedAt: true,
+        feedbackType: true,
+      },
+    }),
+    prisma.reviewTopic.findMany({
+      where: { review: { companyId, postedAt: { gte: periodStart } } },
+      select: { topic: { select: { label: true } } },
+    }),
+  ]);
 
   const countBySentiment = (reviews: { sentiment: Sentiment | null; rating: unknown }[], target: Sentiment) =>
     reviews.filter((r) => effectiveSentiment(r) === target).length;
@@ -83,6 +109,28 @@ export async function getDashboardData(companyId: string): Promise<DashboardData
   const previousPositive = countBySentiment(previousPeriodReviews, "positive");
   const currentNegative = countBySentiment(currentPeriodReviews, "negative");
   const previousNegative = countBySentiment(previousPeriodReviews, "negative");
+
+  const countByFeedbackType = (reviews: { feedbackType: FeedbackType | null }[], type: FeedbackType) =>
+    reviews.filter((r) => r.feedbackType === type).length;
+
+  const currentSolutions = countByFeedbackType(currentPeriodReviews, "solution");
+  const previousSolutions = countByFeedbackType(previousPeriodReviews, "solution");
+
+  const hasClassifiedData = currentPeriodReviews.some((r) => r.feedbackType !== null);
+
+  const feedbackTypeBreakdown: { type: FeedbackType; count: number }[] = (
+    ["praise", "interest", "problem", "solution"] as FeedbackType[]
+  ).map((type) => ({ type, count: countByFeedbackType(currentPeriodReviews, type) }));
+
+  const topicCounts = new Map<string, number>();
+  for (const link of periodTopicLinks) {
+    const label = link.topic.label;
+    topicCounts.set(label, (topicCounts.get(label) ?? 0) + 1);
+  }
+  const topTopics = Array.from(topicCounts.entries())
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
 
   const channels = channelCounts
     .map((c) => ({
@@ -100,6 +148,7 @@ export async function getDashboardData(companyId: string): Promise<DashboardData
       author: review.author,
       text: review.text,
       sentiment: effectiveSentiment(review),
+      feedbackType: review.feedbackType,
       minutesAgo: Math.max(0, Math.round((now.getTime() - timestamp.getTime()) / 60000)),
     };
   });
@@ -122,12 +171,16 @@ export async function getDashboardData(companyId: string): Promise<DashboardData
   return {
     hasConnections: connectionCount > 0,
     hasReviews: totalReviewCount > 0,
+    hasClassifiedData,
     totalFeedback: {
       value: currentPeriodReviews.length,
       changePercent: changePercent(currentPeriodReviews.length, previousPeriodReviews.length),
     },
     positiveFeedback: { value: currentPositive, changePercent: changePercent(currentPositive, previousPositive) },
     problems: { value: currentNegative, changePercent: changePercent(currentNegative, previousNegative) },
+    solutions: { value: currentSolutions, changePercent: changePercent(currentSolutions, previousSolutions) },
+    feedbackTypeBreakdown,
+    topTopics,
     channels,
     recentReviews,
     trend,

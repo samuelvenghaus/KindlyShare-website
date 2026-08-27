@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
-import { syncGoogleConnection } from "@/lib/google/sync";
+import { runGoogleSyncPipeline } from "@/lib/pipeline";
 
 export interface SyncActionState {
   error?: string;
@@ -33,11 +33,19 @@ export async function syncChannelAction(
 
   try {
     await assertOwnedConnection(connectionId);
-    const result = await syncGoogleConnection(connectionId);
+    const { sync, classification, newAlerts } = await runGoogleSyncPipeline(connectionId);
     revalidatePath("/kanalen");
-    return {
-      success: `${result.fetched} reviews opgehaald (${result.created} nieuw, ${result.updated} bijgewerkt).`,
-    };
+    revalidatePath("/dashboard");
+    revalidatePath("/alerts");
+
+    let success = `${sync.fetched} reviews opgehaald (${sync.created} nieuw, ${sync.updated} bijgewerkt).`;
+    if (classification) {
+      success += ` ${classification.classified} geclassificeerd door AI.`;
+    }
+    if (newAlerts.length > 0) {
+      success += ` ${newAlerts.length} nieuwe alert${newAlerts.length === 1 ? "" : "s"}.`;
+    }
+    return { success };
   } catch (err) {
     console.error("Handmatige sync mislukt:", err);
     return { error: err instanceof Error ? err.message : "Synchroniseren is mislukt." };

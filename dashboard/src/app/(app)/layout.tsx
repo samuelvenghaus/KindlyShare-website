@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { getSession } from "@/lib/auth";
 import { CurrentUserProvider } from "@/lib/current-user-context";
+import { getUnresolvedAlertCount } from "@/lib/data/alerts";
 
 export default async function AppGroupLayout({ children }: { children: ReactNode }) {
   const session = await getSession();
@@ -10,6 +11,8 @@ export default async function AppGroupLayout({ children }: { children: ReactNode
   if (!session) {
     redirect("/login");
   }
+
+  const alertCount = await getUnresolvedAlertCount(session.companyId);
 
   return (
     <CurrentUserProvider
@@ -19,7 +22,7 @@ export default async function AppGroupLayout({ children }: { children: ReactNode
         role: session.role === "owner" ? "owner" : "member",
       }}
     >
-      <AppShell>{children}</AppShell>
+      <AppShell alertCount={alertCount}>{children}</AppShell>
     </CurrentUserProvider>
   );
 }
