@@ -3,21 +3,21 @@ import { prisma } from "@/lib/prisma";
 import { getValidAccessToken } from "@/lib/oauth-token-manager";
 import { ingestReviews, type IngestResult } from "@/lib/review-ingestion";
 import { refreshAccessToken } from "./oauth";
-import { listReviews } from "./business-profile";
+import { listReviews } from "./api";
 
 export interface SyncResult extends IngestResult {
   connectionId: string;
   companyId: string;
 }
 
-export async function syncGoogleConnection(connectionId: string): Promise<SyncResult> {
+export async function syncTrustpilotConnection(connectionId: string): Promise<SyncResult> {
   const connection = await prisma.platformConnection.findUniqueOrThrow({ where: { id: connectionId } });
 
-  if (connection.platform !== "google") {
-    throw new Error("syncGoogleConnection kan alleen op Google-koppelingen worden toegepast.");
+  if (connection.platform !== "trustpilot") {
+    throw new Error("syncTrustpilotConnection kan alleen op Trustpilot-koppelingen worden toegepast.");
   }
   if (!connection.externalAccountId) {
-    throw new Error("Koppeling heeft geen external_account_id.");
+    throw new Error("Koppeling heeft geen business unit ID (external_account_id).");
   }
 
   const accessToken = await getValidAccessToken(connection, refreshAccessToken);
@@ -25,13 +25,13 @@ export async function syncGoogleConnection(connectionId: string): Promise<SyncRe
 
   const result = await ingestReviews(
     connection.companyId,
-    "google",
+    "trustpilot",
     reviews.map((r) => ({
       externalId: r.reviewId,
       authorName: r.authorName,
       rating: r.rating,
-      text: r.comment,
-      postedAt: new Date(r.createTime),
+      text: r.text,
+      postedAt: new Date(r.createdAt),
     }))
   );
 

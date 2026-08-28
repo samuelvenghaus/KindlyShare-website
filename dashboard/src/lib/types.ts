@@ -1,6 +1,7 @@
 export type Platform =
   | "google"
   | "trustpilot"
+  | "app_store"
   | "facebook"
   | "tiktok"
   | "instagram"

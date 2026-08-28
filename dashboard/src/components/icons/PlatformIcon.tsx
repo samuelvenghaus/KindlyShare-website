@@ -75,6 +75,18 @@ function InstagramGlyph() {
   );
 }
 
+function AppStoreGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-full w-full">
+      <rect width="24" height="24" rx="6" fill="#0d96f6" />
+      <path
+        fill="#fff"
+        d="M13.1 6.4a2.6 2.6 0 0 0-1.9.9 2.4 2.4 0 0 0-.6 1.8 2.2 2.2 0 0 0 1.8-.9 2.5 2.5 0 0 0 .7-1.8zm1.9 6.4c0-1.6 1.3-2.4 1.4-2.5a3 3 0 0 0-2.4-1.3c-1-.1-2 .6-2.5.6s-1.3-.6-2.2-.6a3.2 3.2 0 0 0-2.7 1.7c-1.2 2-.3 5 .8 6.7.6.8 1.2 1.7 2.1 1.7s1.2-.6 2.2-.6 1.3.6 2.2.6 1.5-.9 2.1-1.7c.5-.7.9-1.5.7-1.6-1.5-.6-1.7-2.5-1.7-3z"
+      />
+    </svg>
+  );
+}
+
 function OverigGlyph() {
   return (
     <svg viewBox="0 0 24 24" className="h-full w-full">
@@ -89,6 +101,7 @@ function OverigGlyph() {
 const GLYPHS: Record<Platform, () => React.JSX.Element> = {
   google: GoogleGlyph,
   trustpilot: TrustpilotGlyph,
+  app_store: AppStoreGlyph,
   facebook: FacebookGlyph,
   tiktok: TikTokGlyph,
   instagram: InstagramGlyph,

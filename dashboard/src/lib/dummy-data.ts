@@ -3,6 +3,7 @@ import type { FeedbackType, Platform, Review, Sentiment, TopicStat, TrendPoint }
 export const PLATFORM_LABELS: Record<Platform, string> = {
   google: "Google Reviews",
   trustpilot: "Trustpilot",
+  app_store: "App Store",
   facebook: "Facebook",
   tiktok: "TikTok",
   instagram: "Instagram",
@@ -12,6 +13,7 @@ export const PLATFORM_LABELS: Record<Platform, string> = {
 export const PLATFORM_SHORT_LABELS: Record<Platform, string> = {
   google: "Google",
   trustpilot: "Trustpilot",
+  app_store: "App Store",
   facebook: "Facebook",
   tiktok: "TikTok",
   instagram: "Instagram",
@@ -30,6 +32,7 @@ export const feedbackTabCounts: { platform: Platform | "all"; count: number }[] 
   { platform: "all", count: 2847 },
   { platform: "google", count: 1234 },
   { platform: "trustpilot", count: 856 },
+  { platform: "app_store", count: 104 },
   { platform: "facebook", count: 432 },
   { platform: "tiktok", count: 223 },
   { platform: "instagram", count: 98 },
@@ -44,6 +47,7 @@ export const platformSentiment: Record<
 > = {
   google: { positive: 78, negative: 14, neutral: 8 },
   trustpilot: { positive: 82, negative: 11, neutral: 7 },
+  app_store: { positive: 74, negative: 17, neutral: 9 },
   facebook: { positive: 70, negative: 20, neutral: 10 },
   tiktok: { positive: 65, negative: 24, neutral: 11 },
   instagram: { positive: 88, negative: 6, neutral: 6 },
@@ -56,6 +60,7 @@ export const platformSentimentCounts: Record<
 > = {
   google: { positive: 965, negative: 173, neutral: 96 },
   trustpilot: { positive: 702, negative: 94, neutral: 60 },
+  app_store: { positive: 84, negative: 19, neutral: 10 },
   facebook: { positive: 302, negative: 86, neutral: 44 },
   tiktok: { positive: 145, negative: 54, neutral: 24 },
   instagram: { positive: 86, negative: 6, neutral: 6 },
@@ -76,6 +81,13 @@ export const platformTrend: Record<Platform, TrendPoint[]> = {
     { date: "26 mei", positive: 71, negative: 13, neutral: 7 },
     { date: "2 jun", positive: 85, negative: 11, neutral: 5 },
     { date: "9 jun", positive: 91, negative: 10, neutral: 6 },
+  ],
+  app_store: [
+    { date: "12 mei", positive: 22, negative: 5, neutral: 3 },
+    { date: "19 mei", positive: 25, negative: 6, neutral: 3 },
+    { date: "26 mei", positive: 24, negative: 7, neutral: 4 },
+    { date: "2 jun", positive: 28, negative: 6, neutral: 3 },
+    { date: "9 jun", positive: 31, negative: 8, neutral: 4 },
   ],
   facebook: [
     { date: "12 mei", positive: 50, negative: 20, neutral: 10 },
@@ -122,6 +134,13 @@ export const platformScoreDistribution: Record<Platform, { stars: number; count:
     { stars: 2, count: 60, percentage: 7 },
     { stars: 1, count: 51, percentage: 6 },
   ],
+  app_store: [
+    { stars: 5, count: 62, percentage: 60 },
+    { stars: 4, count: 20, percentage: 19 },
+    { stars: 3, count: 10, percentage: 10 },
+    { stars: 2, count: 6, percentage: 6 },
+    { stars: 1, count: 5, percentage: 5 },
+  ],
   facebook: [
     { stars: 5, count: 220, percentage: 51 },
     { stars: 4, count: 95, percentage: 22 },
@@ -167,6 +186,12 @@ export const platformTopTopics: Record<Platform, TopicStat[]> = {
     { label: "Product kwaliteit", count: 94, percentage: 11 },
     { label: "Communicatie", count: 60, percentage: 7 },
   ],
+  app_store: [
+    { label: "App-crashes", count: 24, percentage: 23 },
+    { label: "Product kwaliteit", count: 20, percentage: 19 },
+    { label: "Klantenservice", count: 14, percentage: 14 },
+    { label: "Algemeen", count: 10, percentage: 10 },
+  ],
   facebook: [
     { label: "Klantenservice", count: 108, percentage: 25 },
     { label: "Communicatie", count: 82, percentage: 19 },
@@ -197,6 +222,7 @@ export const platformTopTopics: Record<Platform, TopicStat[]> = {
 const platformAuthors: Record<Platform, string[]> = {
   google: ["Lisa de Vries", "Peter van Dijk", "Annemiek Peters", "Bram Willems", "Sanne Koster"],
   trustpilot: ["Mark Jansen", "Femke Bakker", "Daan Hendriks", "Iris Mulder"],
+  app_store: ["Niels B.", "EmmaNL", "Gebruiker1893"],
   facebook: ["Sophie Bakker", "Ruben de Groot", "Nadia El Amrani"],
   tiktok: ["@thomasv_", "@lauraaa", "@kevin.nl"],
   instagram: ["@anne.dijkstra", "@merel.vh", "@joris_b"],
@@ -341,10 +367,11 @@ const reviewTemplates: {
 const PLATFORM_INDEX: Record<Platform, number> = {
   google: 0,
   trustpilot: 1,
-  facebook: 2,
-  tiktok: 3,
-  instagram: 4,
-  overig: 5,
+  app_store: 2,
+  facebook: 3,
+  tiktok: 4,
+  instagram: 5,
+  overig: 6,
 };
 
 function buildReviewsForPlatform(platform: Platform, count: number): Review[] {
@@ -373,6 +400,7 @@ function buildReviewsForPlatform(platform: Platform, count: number): Review[] {
 export const platformReviews: Record<Platform, Review[]> = {
   google: buildReviewsForPlatform("google", 18),
   trustpilot: buildReviewsForPlatform("trustpilot", 14),
+  app_store: buildReviewsForPlatform("app_store", 7),
   facebook: buildReviewsForPlatform("facebook", 10),
   tiktok: buildReviewsForPlatform("tiktok", 8),
   instagram: buildReviewsForPlatform("instagram", 6),

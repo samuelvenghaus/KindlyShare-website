@@ -74,9 +74,14 @@ model PlatformConnection {
   companyId         String    @map("company_id")
   platform          Platform
   externalAccountId String?   @map("external_account_id")
+  // Google/Trustpilot (OAuth): versleuteld access-token.
+  // Apple (App Store Connect): versleutelde .p8 private key.
   accessToken       String?   @map("access_token")
   refreshToken      String?   @map("refresh_token")
   tokenExpiresAt    DateTime? @map("token_expires_at")
+  // Alleen voor Apple App Store Connect:
+  appleKeyId        String?   @map("apple_key_id")
+  appleIssuerId     String?   @map("apple_issuer_id")
   lastSyncedAt      DateTime? @map("last_synced_at")
   status            String    @default("active")
 

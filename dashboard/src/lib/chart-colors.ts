@@ -10,6 +10,7 @@ export const CHART_COLORS = {
 export const PLATFORM_COLORS = {
   google: "#4285F4",
   trustpilot: "#00B67A",
+  app_store: "#8b8b93",
   facebook: "#1877F2",
   tiktok: "#f5f5f5",
   instagram: "#d6249f",
