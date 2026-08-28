@@ -4,15 +4,15 @@ import { syncGoogleConnection, type SyncResult } from "@/lib/google/sync";
 import { syncTrustpilotConnection } from "@/lib/trustpilot/sync";
 import { syncAppleConnection } from "@/lib/apple/sync";
 import { classifyPendingReviews, type ClassifyPendingResult } from "@/lib/ai/classify";
-import { checkAlertThresholds } from "@/lib/ai/alerts";
+import { checkAlertThresholds, type AlertWithTopic } from "@/lib/ai/alerts";
 import { isAiConfigured } from "@/lib/ai/client";
-import type { Alert } from "@/generated/prisma/client";
+import { notifyNewAlerts } from "@/lib/notifications";
 import type { Platform } from "@/lib/types";
 
 export interface ChannelSyncPipelineResult {
   sync: SyncResult;
   classification: ClassifyPendingResult | null;
-  newAlerts: Alert[];
+  newAlerts: AlertWithTopic[];
 }
 
 // Adapter-patroon: elk platform levert een syncXConnection(connectionId) met
@@ -39,11 +39,18 @@ export async function runSyncPipeline(connectionId: string): Promise<ChannelSync
   const sync = await syncFn(connectionId);
 
   let classification: ClassifyPendingResult | null = null;
-  let newAlerts: Alert[] = [];
+  let newAlerts: AlertWithTopic[] = [];
 
   if (isAiConfigured()) {
     classification = await classifyPendingReviews(sync.companyId);
     newAlerts = await checkAlertThresholds(sync.companyId);
+    if (newAlerts.length > 0) {
+      try {
+        await notifyNewAlerts(sync.companyId, newAlerts);
+      } catch (err) {
+        console.error(`Notificaties versturen mislukt voor bedrijf ${sync.companyId}:`, err);
+      }
+    }
   }
 
   return { sync, classification, newAlerts };

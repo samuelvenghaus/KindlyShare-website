@@ -1,7 +1,9 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
 import { generateAlertSuggestion } from "./suggestions";
-import type { Alert } from "@/generated/prisma/client";
+import type { Alert, Topic } from "@/generated/prisma/client";
+
+export type AlertWithTopic = Alert & { topic: Topic | null };
 
 // Vaste alert-drempel (zoals afgesproken voor deze fase, later instelbaar per bedrijf).
 const WINDOW_DAYS = 3;
@@ -13,7 +15,7 @@ function increasePercent(current: number, previous: number): number {
   return Math.round(((current - previous) / previous) * 1000) / 10;
 }
 
-export async function checkAlertThresholds(companyId: string): Promise<Alert[]> {
+export async function checkAlertThresholds(companyId: string): Promise<AlertWithTopic[]> {
   const topics = await prisma.topic.findMany({ where: { companyId } });
   if (topics.length === 0) return [];
 
@@ -21,7 +23,7 @@ export async function checkAlertThresholds(companyId: string): Promise<Alert[]> 
   const windowStart = new Date(now.getTime() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
   const previousWindowStart = new Date(windowStart.getTime() - WINDOW_DAYS * 24 * 60 * 60 * 1000);
 
-  const newAlerts: Alert[] = [];
+  const newAlerts: AlertWithTopic[] = [];
 
   for (const topic of topics) {
     const existingUnresolved = await prisma.alert.findFirst({
@@ -83,6 +85,7 @@ export async function checkAlertThresholds(companyId: string): Promise<Alert[]> 
         priority,
         aiSuggestion,
       },
+      include: { topic: true },
     });
 
     newAlerts.push(alert);
