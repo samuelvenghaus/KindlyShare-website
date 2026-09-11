@@ -11,6 +11,8 @@ import { getSession } from "@/lib/auth";
 import { isGoogleOAuthConfigured } from "@/lib/google/oauth";
 import { isTrustpilotConfigured } from "@/lib/trustpilot/oauth";
 import { isInstagramConfigured } from "@/lib/instagram/oauth";
+import { isFacebookConfigured } from "@/lib/facebook/oauth";
+import { isTikTokConfigured } from "@/lib/tiktok/oauth";
 
 const ERROR_MESSAGES: Record<string, string> = {
   not_configured:
@@ -19,14 +21,20 @@ const ERROR_MESSAGES: Record<string, string> = {
     "Trustpilot-koppeling is nog niet geconfigureerd. Vraag de beheerder om TRUSTPILOT_API_KEY en TRUSTPILOT_API_SECRET in te stellen.",
   instagram_not_configured:
     "Instagram-koppeling is nog niet geconfigureerd. Vraag de beheerder om INSTAGRAM_APP_ID en INSTAGRAM_APP_SECRET in te stellen.",
+  facebook_not_configured:
+    "Facebook-koppeling is nog niet geconfigureerd. Vraag de beheerder om FACEBOOK_APP_ID en FACEBOOK_APP_SECRET in te stellen.",
+  tiktok_not_configured:
+    "TikTok-koppeling is nog niet geconfigureerd. Vraag de beheerder om TIKTOK_APP_ID en TIKTOK_APP_SECRET in te stellen.",
   missing_business_unit: "Vul je Trustpilot business unit ID in voordat je verbindt.",
   invalid_state: "De koppelpoging is verlopen of ongeldig. Probeer het opnieuw.",
   no_accounts: "Er is geen Google Bedrijfsprofiel gevonden voor dit Google-account.",
+  no_pages: "Er is geen Facebook-pagina gevonden waar je beheerder van bent.",
+  no_advertisers: "Er is geen TikTok-advertiseraccount gevonden waar je toegang toe hebt.",
   connection_failed: "Het koppelen is mislukt. Probeer het opnieuw.",
   access_denied: "Toestemming geweigerd.",
 };
 
-const COMING_SOON_PLATFORMS: Platform[] = ["facebook", "tiktok", "overig"];
+const COMING_SOON_PLATFORMS: Platform[] = ["overig"];
 
 export default async function KanalenPage({
   searchParams,
@@ -36,7 +44,14 @@ export default async function KanalenPage({
   const params = await searchParams;
   const session = await getSession();
 
-  const [googleConnections, trustpilotConnections, appleConnections, instagramConnections] = session
+  const [
+    googleConnections,
+    trustpilotConnections,
+    appleConnections,
+    instagramConnections,
+    facebookConnections,
+    tiktokConnections,
+  ] = session
     ? await Promise.all([
         prisma.platformConnection.findMany({
           where: { companyId: session.companyId, platform: "google" },
@@ -54,8 +69,16 @@ export default async function KanalenPage({
           where: { companyId: session.companyId, platform: "instagram" },
           orderBy: { lastSyncedAt: "desc" },
         }),
+        prisma.platformConnection.findMany({
+          where: { companyId: session.companyId, platform: "facebook" },
+          orderBy: { lastSyncedAt: "desc" },
+        }),
+        prisma.platformConnection.findMany({
+          where: { companyId: session.companyId, platform: "tiktok" },
+          orderBy: { lastSyncedAt: "desc" },
+        }),
       ])
-    : [[], [], [], []];
+    : [[], [], [], [], [], []];
 
   const connectedCount = typeof params.connected === "string" ? params.connected : null;
   const errorCode = typeof params.error === "string" ? params.error : null;
@@ -230,6 +253,83 @@ export default async function KanalenPage({
             </div>
           ) : (
             <ConnectionsList connections={instagramConnections} />
+          )}
+        </Card>
+
+        {/* Facebook */}
+        <Card>
+          <CardHeader
+            title={
+              <span className="flex items-center gap-2">
+                <PlatformIcon platform="facebook" size={22} />
+                {PLATFORM_LABELS.facebook}
+              </span>
+            }
+          />
+          {facebookConnections.length === 0 ? (
+            <div>
+              <p className="text-sm text-muted">
+                Verbind je Facebook-pagina om aanbevelingen (recommends/doesn&apos;t recommend) en
+                reviews automatisch op te halen.
+              </p>
+              {isFacebookConfigured() ? (
+                <a
+                  href="/api/facebook/connect"
+                  className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
+                >
+                  Verbinden met Facebook
+                </a>
+              ) : (
+                <p className="mt-4 rounded-lg border border-border bg-surface-elevated px-3 py-2.5 text-xs text-muted">
+                  Nog niet geconfigureerd. Stel <code>FACEBOOK_APP_ID</code> en{" "}
+                  <code>FACEBOOK_APP_SECRET</code> in om deze koppeling te activeren.
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <ConnectionsList connections={facebookConnections} />
+              {isFacebookConfigured() && (
+                <a href="/api/facebook/connect" className="text-sm font-medium text-brand hover:underline">
+                  + Nog een pagina koppelen
+                </a>
+              )}
+            </div>
+          )}
+        </Card>
+
+        {/* TikTok */}
+        <Card>
+          <CardHeader
+            title={
+              <span className="flex items-center gap-2">
+                <PlatformIcon platform="tiktok" size={22} />
+                {PLATFORM_LABELS.tiktok}
+              </span>
+            }
+          />
+          {tiktokConnections.length === 0 ? (
+            <div>
+              <p className="text-sm text-muted">
+                Verbind je TikTok Ads/Business-account om comments onder je video&apos;s
+                automatisch te verzamelen. Onze AI filtert spam en losse reacties eruit.
+              </p>
+              {isTikTokConfigured() ? (
+                <a
+                  href="/api/tiktok/connect"
+                  className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
+                >
+                  Verbinden met TikTok
+                </a>
+              ) : (
+                <p className="mt-4 rounded-lg border border-border bg-surface-elevated px-3 py-2.5 text-xs text-muted">
+                  Nog niet geconfigureerd. Stel <code>TIKTOK_APP_ID</code> en{" "}
+                  <code>TIKTOK_APP_SECRET</code> in om deze koppeling te activeren.
+                </p>
+              )}
+            </div>
+          ) : (
+            <ConnectionsList connections={tiktokConnections} />
           )}
         </Card>
 
