@@ -4,6 +4,7 @@ import { Card, CardHeader } from "@/components/ui/Card";
 import { PlatformIcon } from "@/components/icons/PlatformIcon";
 import { ConnectionsList } from "@/components/kanalen/ConnectionsList";
 import { AppleConnectForm } from "@/components/kanalen/AppleConnectForm";
+import { SetupSteps, SetupNote } from "@/components/kanalen/SetupSteps";
 import { PLATFORM_LABELS } from "@/lib/dummy-data";
 import type { Platform } from "@/lib/types";
 import { prisma } from "@/lib/prisma";
@@ -126,12 +127,22 @@ export default async function KanalenPage({
                 Verbind je Google Bedrijfsprofiel om reviews automatisch op te halen en te centraliseren.
               </p>
               {isGoogleOAuthConfigured() ? (
-                <a
-                  href="/api/google/connect"
-                  className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
-                >
-                  Verbinden met Google
-                </a>
+                <>
+                  <SetupSteps
+                    steps={[
+                      "Zorg dat je een Google Bedrijfsprofiel hebt op business.google.com en dat je hier beheerder van bent.",
+                      "Klik op “Verbinden met Google” hieronder.",
+                      "Log in met het Google-account dat toegang heeft tot je Bedrijfsprofiel en geef KindlyShare toestemming.",
+                      "Al je locaties worden automatisch gevonden en gekoppeld.",
+                    ]}
+                  />
+                  <a
+                    href="/api/google/connect"
+                    className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
+                  >
+                    Verbinden met Google
+                  </a>
+                </>
               ) : (
                 <p className="mt-4 rounded-lg border border-border bg-surface-elevated px-3 py-2.5 text-xs text-muted">
                   Nog niet geconfigureerd. Stel <code>GOOGLE_CLIENT_ID</code> en{" "}
@@ -167,25 +178,35 @@ export default async function KanalenPage({
                 Verbind je Trustpilot-bedrijfsprofiel om reviews automatisch op te halen.
               </p>
               {isTrustpilotConfigured() ? (
-                <form action="/api/trustpilot/connect" method="GET" className="mt-4 space-y-3">
-                  <label className="block">
-                    <span className="mb-1 block text-xs font-medium text-muted">
-                      Trustpilot business unit ID
-                    </span>
-                    <input
-                      name="businessUnitId"
-                      placeholder="5a7ab545..."
-                      required
-                      className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none"
-                    />
-                  </label>
-                  <button
-                    type="submit"
-                    className="inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
-                  >
-                    Verbinden met Trustpilot
-                  </button>
-                </form>
+                <>
+                  <SetupSteps
+                    steps={[
+                      "Zorg dat je een Trustpilot Business-account hebt.",
+                      "Zoek je Business Unit ID op: log in op je Trustpilot Business-dashboard, dit ID staat in de URL van je bedrijfsprofiel of onder Integraties/API.",
+                      "Vul de Business Unit ID hieronder in en klik op “Verbinden met Trustpilot”.",
+                      "Log in bij Trustpilot en geef toestemming - je reviews worden voortaan automatisch opgehaald.",
+                    ]}
+                  />
+                  <form action="/api/trustpilot/connect" method="GET" className="mt-4 space-y-3">
+                    <label className="block">
+                      <span className="mb-1 block text-xs font-medium text-muted">
+                        Trustpilot business unit ID
+                      </span>
+                      <input
+                        name="businessUnitId"
+                        placeholder="5a7ab545..."
+                        required
+                        className="w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none"
+                      />
+                    </label>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
+                    >
+                      Verbinden met Trustpilot
+                    </button>
+                  </form>
+                </>
               ) : (
                 <p className="mt-4 rounded-lg border border-border bg-surface-elevated px-3 py-2.5 text-xs text-muted">
                   Nog niet geconfigureerd. Stel <code>TRUSTPILOT_API_KEY</code> en{" "}
@@ -213,6 +234,14 @@ export default async function KanalenPage({
               <p className="text-sm text-muted">
                 Verbind je App Store Connect-account om app-reviews automatisch op te halen.
               </p>
+              <SetupSteps
+                steps={[
+                  "Log in op appstoreconnect.apple.com met een Apple Developer-account (rol Accountbeheerder of Admin).",
+                  "Ga naar Gebruikers en toegang > Integraties > App Store Connect API en maak een nieuwe sleutel aan.",
+                  "Noteer de Key ID en Issuer ID, en download het .p8-bestand - dit kan maar één keer!",
+                  "Vul hieronder je App-ID, Issuer ID en Key ID in, en plak de inhoud van het .p8-bestand.",
+                ]}
+              />
               <AppleConnectForm />
             </div>
           ) : (
@@ -238,12 +267,22 @@ export default async function KanalenPage({
                 daadwerkelijke feedback meetelt.
               </p>
               {isInstagramConfigured() ? (
-                <a
-                  href="/api/instagram/connect"
-                  className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
-                >
-                  Verbinden met Instagram
-                </a>
+                <>
+                  <SetupSteps
+                    steps={[
+                      "Zorg dat je Instagram-account een Professional-account is (Zakelijk of Creator) - instelbaar via de Instagram-app onder Instellingen > Account.",
+                      "Klik op “Verbinden met Instagram” hieronder.",
+                      "Log in en geef toestemming voor toegang tot je posts en comments.",
+                      "Je account wordt automatisch gekoppeld - comments worden voortaan opgehaald.",
+                    ]}
+                  />
+                  <a
+                    href="/api/instagram/connect"
+                    className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
+                  >
+                    Verbinden met Instagram
+                  </a>
+                </>
               ) : (
                 <p className="mt-4 rounded-lg border border-border bg-surface-elevated px-3 py-2.5 text-xs text-muted">
                   Nog niet geconfigureerd. Stel <code>INSTAGRAM_APP_ID</code> en{" "}
@@ -273,12 +312,22 @@ export default async function KanalenPage({
                 reviews automatisch op te halen.
               </p>
               {isFacebookConfigured() ? (
-                <a
-                  href="/api/facebook/connect"
-                  className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
-                >
-                  Verbinden met Facebook
-                </a>
+                <>
+                  <SetupSteps
+                    steps={[
+                      "Zorg dat je beheerder (Admin) bent van een Facebook-pagina.",
+                      "Klik op “Verbinden met Facebook” hieronder.",
+                      "Log in bij Facebook, selecteer de pagina('s) die je wilt koppelen en geef toestemming.",
+                      "Je pagina('s) worden automatisch gekoppeld - aanbevelingen en reviews worden voortaan opgehaald.",
+                    ]}
+                  />
+                  <a
+                    href="/api/facebook/connect"
+                    className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
+                  >
+                    Verbinden met Facebook
+                  </a>
+                </>
               ) : (
                 <p className="mt-4 rounded-lg border border-border bg-surface-elevated px-3 py-2.5 text-xs text-muted">
                   Nog niet geconfigureerd. Stel <code>FACEBOOK_APP_ID</code> en{" "}
@@ -315,12 +364,27 @@ export default async function KanalenPage({
                 automatisch te verzamelen. Onze AI filtert spam en losse reacties eruit.
               </p>
               {isTikTokConfigured() ? (
-                <a
-                  href="/api/tiktok/connect"
-                  className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
-                >
-                  Verbinden met TikTok
-                </a>
+                <>
+                  <SetupNote>
+                    Let op: een gewoon (gratis) TikTok Zakelijk-account is hiervoor niet genoeg. Je
+                    hebt een TikTok <strong>Ads-account</strong> nodig - dit kan gratis via
+                    ads.tiktok.com, ook zonder daadwerkelijk te adverteren.
+                  </SetupNote>
+                  <SetupSteps
+                    steps={[
+                      "Maak een TikTok Ads-account aan via ads.tiktok.com (indien je die nog niet hebt).",
+                      "Klik op “Verbinden met TikTok” hieronder.",
+                      "Log in met je TikTok Ads-account en geef toestemming.",
+                      "Je advertiser-account wordt gekoppeld - comments op je video's worden voortaan opgehaald.",
+                    ]}
+                  />
+                  <a
+                    href="/api/tiktok/connect"
+                    className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
+                  >
+                    Verbinden met TikTok
+                  </a>
+                </>
               ) : (
                 <p className="mt-4 rounded-lg border border-border bg-surface-elevated px-3 py-2.5 text-xs text-muted">
                   Nog niet geconfigureerd. Stel <code>TIKTOK_APP_ID</code> en{" "}
