@@ -36,6 +36,7 @@ export async function checkAlertThresholds(companyId: string): Promise<AlertWith
         where: {
           companyId,
           feedbackType: "problem",
+          isRelevant: true,
           postedAt: { gte: windowStart },
           topics: { some: { topicId: topic.id } },
         },
@@ -44,6 +45,7 @@ export async function checkAlertThresholds(companyId: string): Promise<AlertWith
         where: {
           companyId,
           feedbackType: "problem",
+          isRelevant: true,
           postedAt: { gte: previousWindowStart, lt: windowStart },
           topics: { some: { topicId: topic.id } },
         },
@@ -59,6 +61,7 @@ export async function checkAlertThresholds(companyId: string): Promise<AlertWith
       where: {
         companyId,
         feedbackType: "problem",
+        isRelevant: true,
         postedAt: { gte: windowStart },
         topics: { some: { topicId: topic.id } },
       },

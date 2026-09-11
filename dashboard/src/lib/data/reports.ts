@@ -51,6 +51,7 @@ export interface ReportData {
   hasReviews: boolean;
   totalReviews: { value: number; changePercent: number };
   averageRating: number | null;
+  ignoredNoiseCount: number;
   sentimentBreakdown: { sentiment: Sentiment; count: number; percentage: number }[];
   feedbackTypeBreakdown: { type: FeedbackType; count: number }[];
   topTopics: { label: string; count: number }[];
@@ -64,29 +65,33 @@ export async function getReportData(companyId: string, period: ReportPeriod): Pr
   const periodStart = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
   const previousPeriodStart = new Date(periodStart.getTime() - days * 24 * 60 * 60 * 1000);
 
-  const [currentReviews, previousReviewCount, topicLinks, channelCounts, alerts] = await Promise.all([
-    prisma.review.findMany({
-      where: { companyId, postedAt: { gte: periodStart } },
-      select: { sentiment: true, rating: true, feedbackType: true, platform: true },
-    }),
-    prisma.review.count({
-      where: { companyId, postedAt: { gte: previousPeriodStart, lt: periodStart } },
-    }),
-    prisma.reviewTopic.findMany({
-      where: { review: { companyId, postedAt: { gte: periodStart } } },
-      select: { topic: { select: { label: true } } },
-    }),
-    prisma.review.groupBy({
-      by: ["platform"],
-      where: { companyId, postedAt: { gte: periodStart } },
-      _count: { _all: true },
-    }),
-    prisma.alert.findMany({
-      where: { companyId, createdAt: { gte: periodStart } },
-      orderBy: { createdAt: "desc" },
-      include: { topic: true },
-    }),
-  ]);
+  const [currentReviews, previousReviewCount, topicLinks, channelCounts, alerts, ignoredNoiseCount] =
+    await Promise.all([
+      prisma.review.findMany({
+        where: { companyId, postedAt: { gte: periodStart }, isRelevant: true },
+        select: { sentiment: true, rating: true, feedbackType: true, platform: true },
+      }),
+      prisma.review.count({
+        where: { companyId, postedAt: { gte: previousPeriodStart, lt: periodStart }, isRelevant: true },
+      }),
+      prisma.reviewTopic.findMany({
+        where: { review: { companyId, postedAt: { gte: periodStart }, isRelevant: true } },
+        select: { topic: { select: { label: true } } },
+      }),
+      prisma.review.groupBy({
+        by: ["platform"],
+        where: { companyId, postedAt: { gte: periodStart }, isRelevant: true },
+        _count: { _all: true },
+      }),
+      prisma.alert.findMany({
+        where: { companyId, createdAt: { gte: periodStart } },
+        orderBy: { createdAt: "desc" },
+        include: { topic: true },
+      }),
+      prisma.review.count({
+        where: { companyId, postedAt: { gte: periodStart }, isRelevant: false },
+      }),
+    ]);
 
   const total = currentReviews.length;
 
@@ -139,6 +144,7 @@ export async function getReportData(companyId: string, period: ReportPeriod): Pr
     hasReviews: total > 0,
     totalReviews: { value: total, changePercent: changePercent(total, previousReviewCount) },
     averageRating,
+    ignoredNoiseCount,
     sentimentBreakdown,
     feedbackTypeBreakdown,
     topTopics,

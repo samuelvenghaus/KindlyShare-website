@@ -7,6 +7,13 @@ import { prisma } from "@/lib/prisma";
 const CLASSIFICATION_MODEL = "claude-opus-5";
 
 const ReviewClassificationSchema = z.object({
+  isRelevant: z
+    .boolean()
+    .describe(
+      "false als dit geen daadwerkelijke feedback over het bedrijf/product is - bv. spam, een reactie die alleen " +
+        "uit emoji's bestaat, een grapje, iemand die een vriend tagt, 'eerste!'-achtige reacties, of iets volledig " +
+        "onrelevants. true bij elke, ook summiere, echte mening/ervaring/vraag/klacht over het bedrijf."
+    ),
   sentiment: z.enum(["positive", "neutral", "negative"]),
   feedbackType: z.enum(["praise", "interest", "problem", "solution"]),
   topics: z
@@ -17,9 +24,15 @@ const ReviewClassificationSchema = z.object({
 
 export type ReviewClassification = z.infer<typeof ReviewClassificationSchema>;
 
-const SYSTEM_PROMPT = `Je classificeert klantreviews voor KindlyShare, een Nederlands feedback-dashboard.
+const SYSTEM_PROMPT = `Je classificeert klantfeedback voor KindlyShare, een Nederlands feedback-dashboard dat reviews
+en social-media-comments (o.a. Instagram) van bedrijven centraliseert.
 
-Voor elke review bepaal je:
+Voor elk stuk feedback bepaal je eerst:
+- isRelevant: is dit daadwerkelijke feedback over het bedrijf/product, of ruis? Reviews met een sterrenscore
+  (Google/Trustpilot/App Store) zijn vrijwel altijd relevant. Bij Instagram-comments moet je juist alert zijn op
+  ruis: spam, losse emoji's, grapjes tussen volgers, iemand die een vriend tagt zonder verder commentaar,
+  "eerste!"-reacties, of complimenten die alleen over de foto/video zelf gaan zonder iets over het bedrijf te
+  zeggen. Twijfel je? Kies dan true - alleen overduidelijke ruis is false.
 - sentiment: positive, neutral, of negative
 - feedbackType:
   - praise: puur positieve feedback zonder actiepunt
@@ -30,14 +43,19 @@ Voor elke review bepaal je:
   "Klantenservice", "Product kwaliteit", "Retourproces", "Wachttijden", "Prijs / kwaliteit",
   "Communicatie"). Hergebruik deze voorbeelden waar toepasselijk zodat onderwerpen consistent
   blijven; verzin alleen een nieuw label als geen van deze past. Gebruik "Algemeen" als er geen
-  duidelijk onderwerp is.`;
+  duidelijk onderwerp is. Vul sentiment/feedbackType/topics altijd in, ook als isRelevant false is
+  (doe gewoon je beste inschatting) - de applicatie negeert deze velden dan verder.`;
 
-function buildUserPrompt(text: string, rating: number | null): string {
+function buildUserPrompt(text: string, rating: number | null, platform: string): string {
   const ratingLine = rating !== null ? `Sterrenscore: ${rating}/5\n` : "";
-  return `${ratingLine}Review: "${text}"`;
+  return `Platform: ${platform}\n${ratingLine}Tekst: "${text}"`;
 }
 
-export async function classifyReview(text: string, rating: number | null): Promise<ReviewClassification> {
+export async function classifyReview(
+  text: string,
+  rating: number | null,
+  platform: string = "onbekend"
+): Promise<ReviewClassification> {
   const client = getAnthropicClient();
 
   const response = await client.messages.parse({
@@ -48,7 +66,7 @@ export async function classifyReview(text: string, rating: number | null): Promi
       format: zodOutputFormat(ReviewClassificationSchema),
       effort: "low",
     },
-    messages: [{ role: "user", content: buildUserPrompt(text, rating) }],
+    messages: [{ role: "user", content: buildUserPrompt(text, rating, platform) }],
   });
 
   if (!response.parsed_output) {
@@ -103,26 +121,30 @@ export async function classifyPendingReviews(companyId: string, limit = 25): Pro
     }
 
     try {
-      const result = await classifyReview(review.text, rating);
+      const result = await classifyReview(review.text, rating, review.platform);
 
+      // Ruis (bv. een spam-comment onder een Instagram-post) krijgt geen onderwerp-labels -
+      // die zouden de "Meest genoemde onderwerpen"-lijst alleen maar vervuilen.
       const topicIds: string[] = [];
-      for (const rawLabel of result.topics) {
-        const label = rawLabel.trim();
-        if (!label) continue;
-        const key = label.toLowerCase();
-        let topicId = topicIdByLabel.get(key);
-        if (!topicId) {
-          const topic = await prisma.topic.create({ data: { companyId, label } });
-          topicId = topic.id;
-          topicIdByLabel.set(key, topicId);
+      if (result.isRelevant) {
+        for (const rawLabel of result.topics) {
+          const label = rawLabel.trim();
+          if (!label) continue;
+          const key = label.toLowerCase();
+          let topicId = topicIdByLabel.get(key);
+          if (!topicId) {
+            const topic = await prisma.topic.create({ data: { companyId, label } });
+            topicId = topic.id;
+            topicIdByLabel.set(key, topicId);
+          }
+          topicIds.push(topicId);
         }
-        topicIds.push(topicId);
       }
 
       await prisma.$transaction([
         prisma.review.update({
           where: { id: review.id },
-          data: { sentiment: result.sentiment, feedbackType: result.feedbackType },
+          data: { sentiment: result.sentiment, feedbackType: result.feedbackType, isRelevant: result.isRelevant },
         }),
         prisma.reviewTopic.deleteMany({ where: { reviewId: review.id } }),
         ...topicIds.map((topicId) =>

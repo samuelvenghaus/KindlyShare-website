@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { syncGoogleConnection, type SyncResult } from "@/lib/google/sync";
 import { syncTrustpilotConnection } from "@/lib/trustpilot/sync";
 import { syncAppleConnection } from "@/lib/apple/sync";
+import { syncInstagramConnection } from "@/lib/instagram/sync";
 import { classifyPendingReviews, type ClassifyPendingResult } from "@/lib/ai/classify";
 import { checkAlertThresholds, type AlertWithTopic } from "@/lib/ai/alerts";
 import { isAiConfigured } from "@/lib/ai/client";
@@ -22,6 +23,7 @@ const SYNC_ADAPTERS: Record<string, (connectionId: string) => Promise<SyncResult
   google: syncGoogleConnection,
   trustpilot: syncTrustpilotConnection,
   app_store: syncAppleConnection,
+  instagram: syncInstagramConnection,
 };
 
 const SYNCABLE_PLATFORMS = Object.keys(SYNC_ADAPTERS) as Platform[];

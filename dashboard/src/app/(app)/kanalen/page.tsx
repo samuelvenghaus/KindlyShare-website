@@ -10,12 +10,15 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { isGoogleOAuthConfigured } from "@/lib/google/oauth";
 import { isTrustpilotConfigured } from "@/lib/trustpilot/oauth";
+import { isInstagramConfigured } from "@/lib/instagram/oauth";
 
 const ERROR_MESSAGES: Record<string, string> = {
   not_configured:
     "Google-koppeling is nog niet geconfigureerd. Vraag de beheerder om GOOGLE_CLIENT_ID en GOOGLE_CLIENT_SECRET in te stellen.",
   trustpilot_not_configured:
     "Trustpilot-koppeling is nog niet geconfigureerd. Vraag de beheerder om TRUSTPILOT_API_KEY en TRUSTPILOT_API_SECRET in te stellen.",
+  instagram_not_configured:
+    "Instagram-koppeling is nog niet geconfigureerd. Vraag de beheerder om INSTAGRAM_APP_ID en INSTAGRAM_APP_SECRET in te stellen.",
   missing_business_unit: "Vul je Trustpilot business unit ID in voordat je verbindt.",
   invalid_state: "De koppelpoging is verlopen of ongeldig. Probeer het opnieuw.",
   no_accounts: "Er is geen Google Bedrijfsprofiel gevonden voor dit Google-account.",
@@ -23,7 +26,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   access_denied: "Toestemming geweigerd.",
 };
 
-const COMING_SOON_PLATFORMS: Platform[] = ["facebook", "tiktok", "instagram", "overig"];
+const COMING_SOON_PLATFORMS: Platform[] = ["facebook", "tiktok", "overig"];
 
 export default async function KanalenPage({
   searchParams,
@@ -33,7 +36,7 @@ export default async function KanalenPage({
   const params = await searchParams;
   const session = await getSession();
 
-  const [googleConnections, trustpilotConnections, appleConnections] = session
+  const [googleConnections, trustpilotConnections, appleConnections, instagramConnections] = session
     ? await Promise.all([
         prisma.platformConnection.findMany({
           where: { companyId: session.companyId, platform: "google" },
@@ -47,8 +50,12 @@ export default async function KanalenPage({
           where: { companyId: session.companyId, platform: "app_store" },
           orderBy: { lastSyncedAt: "desc" },
         }),
+        prisma.platformConnection.findMany({
+          where: { companyId: session.companyId, platform: "instagram" },
+          orderBy: { lastSyncedAt: "desc" },
+        }),
       ])
-    : [[], [], []];
+    : [[], [], [], []];
 
   const connectedCount = typeof params.connected === "string" ? params.connected : null;
   const errorCode = typeof params.error === "string" ? params.error : null;
@@ -187,6 +194,42 @@ export default async function KanalenPage({
             </div>
           ) : (
             <ConnectionsList connections={appleConnections} />
+          )}
+        </Card>
+
+        {/* Instagram */}
+        <Card>
+          <CardHeader
+            title={
+              <span className="flex items-center gap-2">
+                <PlatformIcon platform="instagram" size={22} />
+                {PLATFORM_LABELS.instagram}
+              </span>
+            }
+          />
+          {instagramConnections.length === 0 ? (
+            <div>
+              <p className="text-sm text-muted">
+                Verbind je Instagram-bedrijfsaccount om comments onder je posts automatisch te
+                verzamelen. Onze AI filtert spam en losse reacties eruit, zodat alleen
+                daadwerkelijke feedback meetelt.
+              </p>
+              {isInstagramConfigured() ? (
+                <a
+                  href="/api/instagram/connect"
+                  className="mt-4 inline-flex items-center rounded-xl bg-brand px-4 py-2.5 text-sm font-semibold text-[#0a0a0a] hover:brightness-95"
+                >
+                  Verbinden met Instagram
+                </a>
+              ) : (
+                <p className="mt-4 rounded-lg border border-border bg-surface-elevated px-3 py-2.5 text-xs text-muted">
+                  Nog niet geconfigureerd. Stel <code>INSTAGRAM_APP_ID</code> en{" "}
+                  <code>INSTAGRAM_APP_SECRET</code> in om deze koppeling te activeren.
+                </p>
+              )}
+            </div>
+          ) : (
+            <ConnectionsList connections={instagramConnections} />
           )}
         </Card>
 

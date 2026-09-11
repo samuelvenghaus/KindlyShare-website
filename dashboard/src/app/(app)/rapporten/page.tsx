@@ -94,7 +94,15 @@ export default async function RapportenPage({
         </Card>
       ) : (
         <>
-          <p className="mb-4 text-xs text-muted">Periode: {data.dateRangeLabel}</p>
+          <p className={data.ignoredNoiseCount > 0 ? "mb-1 text-xs text-muted" : "mb-4 text-xs text-muted"}>
+            Periode: {data.dateRangeLabel}
+          </p>
+          {data.ignoredNoiseCount > 0 && (
+            <p className="mb-4 text-xs text-muted-foreground">
+              {data.ignoredNoiseCount} reactie{data.ignoredNoiseCount === 1 ? "" : "s"} door AI als ruis
+              genegeerd (bv. spam of losse emoji&apos;s onder Instagram-posts) en hier niet meegeteld.
+            </p>
+          )}
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <StatCard

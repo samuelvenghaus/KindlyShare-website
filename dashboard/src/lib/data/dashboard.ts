@@ -70,18 +70,18 @@ export async function getDashboardData(companyId: string): Promise<DashboardData
     periodTopicLinks,
   ] = await Promise.all([
     prisma.platformConnection.count({ where: { companyId } }),
-    prisma.review.count({ where: { companyId } }),
+    prisma.review.count({ where: { companyId, isRelevant: true } }),
     prisma.review.findMany({
-      where: { companyId, postedAt: { gte: periodStart } },
+      where: { companyId, postedAt: { gte: periodStart }, isRelevant: true },
       select: { sentiment: true, rating: true, postedAt: true, feedbackType: true },
     }),
     prisma.review.findMany({
-      where: { companyId, postedAt: { gte: previousPeriodStart, lt: periodStart } },
+      where: { companyId, postedAt: { gte: previousPeriodStart, lt: periodStart }, isRelevant: true },
       select: { sentiment: true, rating: true, feedbackType: true },
     }),
-    prisma.review.groupBy({ by: ["platform"], where: { companyId }, _count: { _all: true } }),
+    prisma.review.groupBy({ by: ["platform"], where: { companyId, isRelevant: true }, _count: { _all: true } }),
     prisma.review.findMany({
-      where: { companyId },
+      where: { companyId, isRelevant: true },
       orderBy: [{ postedAt: "desc" }],
       take: 5,
       select: {
@@ -97,7 +97,7 @@ export async function getDashboardData(companyId: string): Promise<DashboardData
       },
     }),
     prisma.reviewTopic.findMany({
-      where: { review: { companyId, postedAt: { gte: periodStart } } },
+      where: { review: { companyId, postedAt: { gte: periodStart }, isRelevant: true } },
       select: { topic: { select: { label: true } } },
     }),
   ]);

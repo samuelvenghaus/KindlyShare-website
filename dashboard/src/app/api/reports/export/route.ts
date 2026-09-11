@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   const periodStart = new Date(Date.now() - PERIOD_DAYS[period] * 24 * 60 * 60 * 1000);
 
   const reviews = await prisma.review.findMany({
-    where: { companyId: session.companyId, postedAt: { gte: periodStart } },
+    where: { companyId: session.companyId, postedAt: { gte: periodStart }, isRelevant: true },
     orderBy: { postedAt: "desc" },
     include: { topics: { include: { topic: true } } },
   });
