@@ -1,5 +1,4 @@
-"use client";
-
+import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import clsx from "clsx";
 
@@ -8,13 +7,13 @@ export function Pagination({
   totalPages,
   totalItems,
   pageSize,
-  onPageChange,
+  buildHref,
 }: {
   page: number;
   totalPages: number;
   totalItems: number;
   pageSize: number;
-  onPageChange: (page: number) => void;
+  buildHref: (page: number) => string;
 }) {
   if (totalItems === 0) return null;
 
@@ -28,32 +27,38 @@ export function Pagination({
         {from} - {to} van {totalItems.toLocaleString("nl-NL")}
       </p>
       <div className="flex items-center gap-1">
-        <button
-          onClick={() => onPageChange(Math.max(1, page - 1))}
-          disabled={page === 1}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted hover:text-foreground disabled:opacity-40"
+        <Link
+          href={buildHref(Math.max(1, page - 1))}
+          aria-disabled={page === 1}
+          className={clsx(
+            "flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted hover:text-foreground",
+            page === 1 && "pointer-events-none opacity-40"
+          )}
         >
           <ChevronLeft size={15} />
-        </button>
+        </Link>
         {pages.map((p) => (
-          <button
+          <Link
             key={p}
-            onClick={() => onPageChange(p)}
+            href={buildHref(p)}
             className={clsx(
               "flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-medium",
               p === page ? "border border-brand text-brand" : "text-muted hover:text-foreground"
             )}
           >
             {p}
-          </button>
+          </Link>
         ))}
-        <button
-          onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-          disabled={page === totalPages}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted hover:text-foreground disabled:opacity-40"
+        <Link
+          href={buildHref(Math.min(totalPages, page + 1))}
+          aria-disabled={page === totalPages}
+          className={clsx(
+            "flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted hover:text-foreground",
+            page === totalPages && "pointer-events-none opacity-40"
+          )}
         >
           <ChevronRight size={15} />
-        </button>
+        </Link>
       </div>
     </div>
   );

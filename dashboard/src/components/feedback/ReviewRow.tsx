@@ -30,7 +30,7 @@ export function ReviewRow({ review, view = "list" }: { review: Review; view?: "l
         <div className="min-w-0">
           <p className="truncate text-sm font-medium text-foreground">{review.author}</p>
           <p className="text-xs text-muted">{formatTimeAgo(review.minutesAgo)}</p>
-          <StarRating rating={review.rating} />
+          {review.rating !== null && <StarRating rating={review.rating} />}
         </div>
       </div>
 

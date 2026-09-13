@@ -17,10 +17,10 @@ export interface Review {
   id: string;
   platform: Platform;
   author: string;
-  rating: number;
+  rating: number | null;
   text: string;
   sentiment: Sentiment;
-  feedbackType: FeedbackType;
+  feedbackType: FeedbackType | null;
   topics: string[];
   minutesAgo: number;
   flagged?: boolean;
