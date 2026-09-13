@@ -4,6 +4,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { CompanyNameForm } from "@/components/instellingen/CompanyNameForm";
 import { NotificationSettingsForm } from "@/components/instellingen/NotificationSettingsForm";
 import { CampaignSenderForm } from "@/components/instellingen/CampaignSenderForm";
+import { ThemeSettingsForm } from "@/components/instellingen/ThemeSettingsForm";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { isEmailConfigured } from "@/lib/notifications/email";
@@ -31,6 +32,11 @@ export default async function InstellingenPage() {
         <Card>
           <CardHeader title="Bedrijfsgegevens" />
           <CompanyNameForm currentName={company.name} />
+        </Card>
+
+        <Card>
+          <CardHeader title="Weergave" subtitle="Kies of het dashboard licht of donker wordt weergegeven." />
+          <ThemeSettingsForm />
         </Card>
 
         <Card>
