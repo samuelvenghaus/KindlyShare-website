@@ -9,6 +9,7 @@ export const PLATFORM_LABELS: Record<Platform, string> = {
   instagram: "Instagram",
   overig: "Overig",
   email_campaign: "E-mailcampagne",
+  widget: "Website-widget",
 };
 
 export const PLATFORM_SHORT_LABELS: Record<Platform, string> = {
@@ -20,6 +21,7 @@ export const PLATFORM_SHORT_LABELS: Record<Platform, string> = {
   instagram: "Instagram",
   overig: "Overig",
   email_campaign: "Campagne",
+  widget: "Widget",
 };
 
 export const SENTIMENT_LABELS: Record<Sentiment, string> = {

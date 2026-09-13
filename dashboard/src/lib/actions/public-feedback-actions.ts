@@ -1,10 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { classifyPendingReviews } from "@/lib/ai/classify";
-import { checkAlertThresholds } from "@/lib/ai/alerts";
-import { isAiConfigured } from "@/lib/ai/client";
-import { notifyNewAlerts } from "@/lib/notifications";
+import { runPostSubmissionPipeline } from "@/lib/reviews/post-submission";
 
 export interface FeedbackFormState {
   error?: string;
@@ -61,19 +58,7 @@ export async function submitFeedbackFormAction(
     data: { status: "responded", respondedAt: new Date(), reviewId: review.id },
   });
 
-  // Net als bij een reguliere kanaal-sync: classificeer direct en controleer alert-drempels,
-  // zodat campagne-feedback zonder speciale afhandeling door dezelfde AI-pipeline stroomt.
-  if (isAiConfigured()) {
-    try {
-      await classifyPendingReviews(campaign.companyId);
-      const newAlerts = await checkAlertThresholds(campaign.companyId);
-      if (newAlerts.length > 0) {
-        await notifyNewAlerts(campaign.companyId, newAlerts);
-      }
-    } catch (err) {
-      console.error(`Classificatie/alert-check na campagnefeedback mislukt voor bedrijf ${campaign.companyId}:`, err);
-    }
-  }
+  await runPostSubmissionPipeline(campaign.companyId);
 
   return { success: true };
 }

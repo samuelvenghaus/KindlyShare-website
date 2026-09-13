@@ -16,6 +16,7 @@ enum Platform {
   instagram
   overig
   email_campaign
+  widget
 }
 
 enum Sentiment {
@@ -68,6 +69,9 @@ model Company {
   // de mail zelf wordt technisch verstuurd via ons geverifieerde domein).
   campaignSenderName   String?              @map("campaign_sender_name")
   campaignReplyToEmail String?              @map("campaign_reply_to_email")
+  // Willekeurig, uniek token voor de publieke feedbackwidget die op de eigen website van
+  // het bedrijf ingebed kan worden (null = widget nog niet geactiveerd).
+  widgetToken          String?              @unique @map("widget_token")
   users                User[]
   platformConnections  PlatformConnection[]
   reviews              Review[]

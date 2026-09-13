@@ -23,7 +23,7 @@ import {
   type SortOrder,
 } from "@/lib/data/feedback";
 
-const KNOWN_PLATFORMS: Platform[] = ["google", "trustpilot", "app_store", "instagram", "facebook", "tiktok", "overig"];
+const KNOWN_PLATFORMS: Platform[] = ["google", "trustpilot", "app_store", "instagram", "facebook", "tiktok", "overig", "email_campaign", "widget"];
 const KNOWN_SENTIMENTS: Sentiment[] = ["positive", "negative", "neutral"];
 
 function parseTab(value: string | string[] | undefined): FeedbackTab {

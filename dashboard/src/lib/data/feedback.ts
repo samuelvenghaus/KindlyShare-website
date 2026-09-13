@@ -8,7 +8,7 @@ export const FEEDBACK_PAGE_SIZE = 10;
 const TREND_WEEKS = 12;
 const DUTCH_MONTHS_SHORT = ["jan", "feb", "mrt", "apr", "mei", "jun", "jul", "aug", "sep", "okt", "nov", "dec"];
 
-const ALL_PLATFORMS: Platform[] = ["google", "trustpilot", "app_store", "instagram", "facebook", "tiktok", "overig"];
+const ALL_PLATFORMS: Platform[] = ["google", "trustpilot", "app_store", "instagram", "facebook", "tiktok", "overig", "email_campaign", "widget"];
 
 export type FeedbackTab = Platform | "all";
 export type SentimentFilter = "all" | Sentiment;

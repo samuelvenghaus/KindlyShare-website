@@ -3,10 +3,11 @@ import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
 const PUBLIC_PATHS = ["/login", "/signup"];
 // Publieke routes zonder login: het token-gebaseerde feedbackformulier/afmeldlink die
-// klanten via een campagne-mail ontvangen, de bijbehorende tracking-pixel, en de
+// klanten via een campagne-mail ontvangen, de bijbehorende tracking-pixel, de
 // cron-endpoints die hun eigen Bearer-token-check hebben (geen sessie-cookie beschikbaar
-// bij een aanroep vanuit een externe scheduler).
-const PUBLIC_PREFIXES = ["/feedback-formulier/", "/afmelden/", "/api/campagnes/track/", "/api/cron/"];
+// bij een aanroep vanuit een externe scheduler), en de embed-widget die bedrijven op hun
+// eigen website plaatsen (wordt in een <iframe> geladen, dus ook zonder sessie-cookie).
+const PUBLIC_PREFIXES = ["/feedback-formulier/", "/afmelden/", "/api/campagnes/track/", "/api/cron/", "/beoordeel/"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

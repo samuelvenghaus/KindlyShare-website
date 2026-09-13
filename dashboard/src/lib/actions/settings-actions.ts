@@ -1,5 +1,6 @@
 "use server";
 
+import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
@@ -107,6 +108,24 @@ export async function updateCampaignSenderDefaultsAction(
 
   revalidatePath("/instellingen");
   return { success: "Afzendergegevens voor campagnes opgeslagen." };
+}
+
+/** Maakt (of vervangt) het widgetToken van het bedrijf - gebruikt voor zowel "widget
+ * activeren" als "nieuwe link genereren" (de oude link wordt dan meteen ongeldig). */
+export async function generateWidgetTokenAction(
+  _prevState: SettingsActionState,
+  _formData: FormData
+): Promise<SettingsActionState> {
+  const session = await getSession();
+  if (!session) return { error: "Niet ingelogd." };
+
+  await prisma.company.update({
+    where: { id: session.companyId },
+    data: { widgetToken: randomBytes(16).toString("base64url") },
+  });
+
+  revalidatePath("/instellingen");
+  return { success: "Widget-link gegenereerd." };
 }
 
 export async function sendTestSlackNotificationAction(

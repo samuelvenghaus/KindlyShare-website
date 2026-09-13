@@ -115,6 +115,22 @@ function EmailCampaignGlyph() {
   );
 }
 
+function WidgetGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-full w-full">
+      <rect width="24" height="24" rx="6" fill="#6366f1" />
+      <path
+        d="M8.5 8.5L5.5 12l3 3.5M15.5 8.5l3 3.5-3 3.5M13.5 7l-3 10"
+        stroke="#fff"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
 const GLYPHS: Record<Platform, () => React.JSX.Element> = {
   google: GoogleGlyph,
   trustpilot: TrustpilotGlyph,
@@ -124,6 +140,7 @@ const GLYPHS: Record<Platform, () => React.JSX.Element> = {
   instagram: InstagramGlyph,
   overig: OverigGlyph,
   email_campaign: EmailCampaignGlyph,
+  widget: WidgetGlyph,
 };
 
 export function PlatformIcon({

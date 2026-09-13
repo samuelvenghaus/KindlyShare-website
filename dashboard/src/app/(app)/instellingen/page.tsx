@@ -5,6 +5,7 @@ import { CompanyNameForm } from "@/components/instellingen/CompanyNameForm";
 import { NotificationSettingsForm } from "@/components/instellingen/NotificationSettingsForm";
 import { CampaignSenderForm } from "@/components/instellingen/CampaignSenderForm";
 import { ThemeSettingsForm } from "@/components/instellingen/ThemeSettingsForm";
+import { WidgetSettingsForm } from "@/components/instellingen/WidgetSettingsForm";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { isEmailConfigured } from "@/lib/notifications/email";
@@ -81,6 +82,17 @@ export default async function InstellingenPage() {
           <CampaignSenderForm
             currentSenderName={company.campaignSenderName ?? company.name}
             currentReplyToEmail={company.campaignReplyToEmail ?? company.users[0]?.email ?? ""}
+          />
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader
+            title="Widget voor je website"
+            subtitle="Verzamel feedback rechtstreeks op je eigen website."
+          />
+          <WidgetSettingsForm
+            widgetToken={company.widgetToken}
+            appUrl={process.env.APP_URL ?? "http://localhost:3000"}
           />
         </Card>
       </div>

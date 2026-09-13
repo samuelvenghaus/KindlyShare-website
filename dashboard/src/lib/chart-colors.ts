@@ -16,4 +16,5 @@ export const PLATFORM_COLORS = {
   instagram: "#d6249f",
   overig: "#71717a",
   email_campaign: "#ffc72c",
+  widget: "#6366f1",
 } as const;
