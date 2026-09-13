@@ -22,7 +22,7 @@ export function AppShell({ children, alertCount = 0 }: { children: ReactNode; al
           >
             <Menu size={18} />
           </button>
-          <Image src="/logo.png" alt="KindlyShare" width={120} height={22} className="h-5 w-auto" />
+          <Image src="/logo.png" alt="KindlyShare" width={120} height={22} className="brand-logo h-5 w-auto" />
         </div>
 
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Calendar, ChevronDown, SlidersHorizontal, Bell, LogOut, User } from "lucide-react";
+import { Calendar, ChevronDown, SlidersHorizontal, Bell, LogOut, User, Sun, Moon } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { useCurrentUser } from "@/lib/current-user-context";
 import { logout } from "@/lib/actions/auth-actions";
+import { useTheme } from "@/lib/theme";
 
 const ROLE_LABELS = { owner: "Eigenaar", member: "Teamlid" } as const;
 
@@ -66,6 +67,7 @@ export function NotificationBell({ count = 2 }: { count?: number }) {
 export function UserMenu() {
   const { name, role } = useCurrentUser();
   const [open, setOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   return (
     <div className="relative">
       <button onClick={() => setOpen((v) => !v)} className="flex items-center gap-3 rounded-xl px-2 py-1.5 hover:bg-surface-elevated">
@@ -82,6 +84,14 @@ export function UserMenu() {
           <div className="absolute right-0 z-20 mt-2 w-52 rounded-xl border border-border bg-surface-elevated p-1.5 shadow-xl">
             <button className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-foreground hover:bg-surface">
               <User size={15} className="text-muted" /> Mijn profiel
+            </button>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-sm text-foreground hover:bg-surface"
+            >
+              {theme === "light" ? <Moon size={15} className="text-muted" /> : <Sun size={15} className="text-muted" />}
+              {theme === "light" ? "Donkere modus" : "Lichte modus"}
             </button>
             <form action={logout}>
               <button

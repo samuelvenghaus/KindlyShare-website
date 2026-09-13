@@ -36,7 +36,7 @@ function SidebarContent({ onNavigate, alertCount = 0 }: { onNavigate?: () => voi
     <div className="flex h-full flex-col">
       <div className="flex items-center px-6 py-6">
         <Link href="/dashboard" onClick={onNavigate}>
-          <Image src="/logo.png" alt="KindlyShare" width={140} height={26} priority className="h-6 w-auto" />
+          <Image src="/logo.png" alt="KindlyShare" width={140} height={26} priority className="brand-logo h-6 w-auto" />
         </Link>
       </div>
 

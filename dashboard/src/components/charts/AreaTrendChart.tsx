@@ -26,7 +26,7 @@ export function AreaTrendChart({
           </defs>
           <XAxis
             dataKey="date"
-            stroke="#71717a"
+            stroke="var(--muted-foreground)"
             fontSize={12}
             tickLine={false}
             axisLine={false}
@@ -35,13 +35,13 @@ export function AreaTrendChart({
           />
           <Tooltip
             contentStyle={{
-              background: "#18181b",
-              border: "1px solid #27272a",
+              background: "var(--surface-elevated)",
+              border: "1px solid var(--border)",
               borderRadius: 8,
               fontSize: 12,
-              color: "#f5f5f5",
+              color: "var(--foreground)",
             }}
-            labelStyle={{ color: "#a1a1aa" }}
+            labelStyle={{ color: "var(--muted)" }}
             formatter={(value) => [Number(value).toLocaleString("nl-NL"), "Feedback"]}
           />
           <Area

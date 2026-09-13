@@ -42,11 +42,11 @@ export function DonutChart({
           </Pie>
           <Tooltip
             contentStyle={{
-              background: "#18181b",
-              border: "1px solid #27272a",
+              background: "var(--surface-elevated)",
+              border: "1px solid var(--border)",
               borderRadius: 8,
               fontSize: 12,
-              color: "#f5f5f5",
+              color: "var(--foreground)",
             }}
             formatter={(value, name) => [Number(value).toLocaleString("nl-NL"), name]}
           />

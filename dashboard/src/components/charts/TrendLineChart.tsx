@@ -30,24 +30,24 @@ export function TrendLineChart({
     <div style={{ width: "100%", height }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-          <CartesianGrid stroke="#27272a" strokeDasharray="3 3" vertical={false} />
+          <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="date"
-            stroke="#71717a"
+            stroke="var(--muted-foreground)"
             fontSize={12}
             tickLine={false}
-            axisLine={{ stroke: "#27272a" }}
+            axisLine={{ stroke: "var(--border)" }}
           />
-          <YAxis stroke="#71717a" fontSize={12} tickLine={false} axisLine={false} width={44} />
+          <YAxis stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} width={44} />
           <Tooltip
             contentStyle={{
-              background: "#18181b",
-              border: "1px solid #27272a",
+              background: "var(--surface-elevated)",
+              border: "1px solid var(--border)",
               borderRadius: 8,
               fontSize: 12,
-              color: "#f5f5f5",
+              color: "var(--foreground)",
             }}
-            labelStyle={{ color: "#a1a1aa" }}
+            labelStyle={{ color: "var(--muted)" }}
           />
           {lines.map((line) => (
             <Line

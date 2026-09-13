@@ -23,6 +23,27 @@
   --brand: #ffc72c;
 }
 
+:root[data-theme="light"] {
+  --background: #f7f7f8;
+  --surface: #ffffff;
+  --surface-elevated: #f4f4f5;
+  --border: #e4e4e7;
+  --foreground: #18181b;
+  --muted: #52525b;
+  --muted-foreground: #71717a;
+
+  --positive: #16a34a;
+  --positive-bg: rgba(22, 163, 74, 0.1);
+  --negative: #dc2626;
+  --negative-bg: rgba(220, 38, 38, 0.1);
+  --neutral: #71717a;
+  --neutral-bg: rgba(113, 113, 122, 0.1);
+  --interest: #2563eb;
+  --interest-bg: rgba(37, 99, 235, 0.1);
+  --solution: #d97706;
+  --solution-bg: rgba(217, 119, 6, 0.1);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
@@ -61,4 +82,14 @@ body {
 
 * {
   scrollbar-color: var(--border) transparent;
+}
+
+/* Het logo-beeldmerk is een wit silhouet op transparante achtergrond - in lichte modus
+   wordt het onzichtbaar tegen de lichte achtergrond, dus draaien we de kleuren om. */
+.brand-logo {
+  filter: none;
+}
+
+:root[data-theme="light"] .brand-logo {
+  filter: invert(1);
 }

@@ -18,7 +18,7 @@ export function AuthShell({
       <div className="w-full max-w-sm">
         <div className="mb-8 flex justify-center">
           <Link href="/">
-            <Image src="/logo.png" alt="KindlyShare" width={160} height={30} priority className="h-7 w-auto" />
+            <Image src="/logo.png" alt="KindlyShare" width={160} height={30} priority className="brand-logo h-7 w-auto" />
           </Link>
         </div>
 

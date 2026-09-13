@@ -33,10 +33,17 @@ export const viewport: Viewport = {
   themeColor: "#0a0a0c",
 };
 
+const THEME_INIT_SCRIPT = `try{if(localStorage.getItem('kindlyshare-theme')==='light'){document.documentElement.setAttribute('data-theme','light');}}catch(e){}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="nl" className={`${geistSans.variable} ${geistMono.variable} h-full dark`}>
-      <body className="min-h-full bg-background text-foreground antialiased">{children}</body>
+    <html lang="nl" className={`${geistSans.variable} ${geistMono.variable} h-full`} suppressHydrationWarning>
+      <body className="min-h-full bg-background text-foreground antialiased">
+        {/* Zet de opgeslagen weergavemodus voordat de pagina rendert, om een flits van
+            donker naar licht te voorkomen (zie src/lib/theme.ts voor de toggle zelf). */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        {children}
+      </body>
     </html>
   );
 }
