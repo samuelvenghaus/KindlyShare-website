@@ -5,7 +5,8 @@ export type Platform =
   | "facebook"
   | "tiktok"
   | "instagram"
-  | "overig";
+  | "overig"
+  | "email_campaign";
 
 export type Sentiment = "positive" | "neutral" | "negative";
 

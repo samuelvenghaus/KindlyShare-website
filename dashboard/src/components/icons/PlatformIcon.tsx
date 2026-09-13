@@ -98,6 +98,23 @@ function OverigGlyph() {
   );
 }
 
+function EmailCampaignGlyph() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-full w-full">
+      <rect width="24" height="24" rx="6" fill="#ffc72c" />
+      <path
+        d="M5 8.5L12 13L19 8.5"
+        stroke="#0a0a0a"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+      <rect x="5" y="7" width="14" height="10" rx="1.5" stroke="#0a0a0a" strokeWidth="1.6" fill="none" />
+    </svg>
+  );
+}
+
 const GLYPHS: Record<Platform, () => React.JSX.Element> = {
   google: GoogleGlyph,
   trustpilot: TrustpilotGlyph,
@@ -106,6 +123,7 @@ const GLYPHS: Record<Platform, () => React.JSX.Element> = {
   tiktok: TikTokGlyph,
   instagram: InstagramGlyph,
   overig: OverigGlyph,
+  email_campaign: EmailCampaignGlyph,
 };
 
 export function PlatformIcon({

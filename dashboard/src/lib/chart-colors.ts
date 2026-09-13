@@ -15,4 +15,5 @@ export const PLATFORM_COLORS = {
   tiktok: "#f5f5f5",
   instagram: "#d6249f",
   overig: "#71717a",
+  email_campaign: "#ffc72c",
 } as const;

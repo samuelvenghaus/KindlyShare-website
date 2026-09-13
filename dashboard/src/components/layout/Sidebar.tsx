@@ -14,6 +14,7 @@ import {
   Settings,
   Sparkles,
   ArrowRight,
+  Mail,
   X,
 } from "lucide-react";
 
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { href: "/feedback", label: "Feedback", icon: MessageSquare },
   { href: "/analyse", label: "Analyse", icon: BarChart3 },
   { href: "/alerts", label: "Alerts", icon: Bell },
+  { href: "/campagnes", label: "Campagnes", icon: Mail },
   { href: "/rapporten", label: "Rapporten", icon: FileText },
   { href: "/kanalen", label: "Kanalen", icon: Radio },
   { href: "/instellingen", label: "Instellingen", icon: Settings },

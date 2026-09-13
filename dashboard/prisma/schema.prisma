@@ -15,6 +15,7 @@ enum Platform {
   tiktok
   instagram
   overig
+  email_campaign
 }
 
 enum Sentiment {
@@ -41,6 +42,20 @@ enum UserRole {
   member
 }
 
+enum CampaignStatus {
+  draft
+  sending
+  sent
+}
+
+enum CampaignRecipientStatus {
+  pending
+  sent
+  responded
+  bounced
+  unsubscribed
+}
+
 model Company {
   id                   String               @id @default(uuid())
   name                 String
@@ -49,11 +64,16 @@ model Company {
   alertEmailEnabled    Boolean              @default(true) @map("alert_email_enabled")
   // Versleuteld opgeslagen (zelfde aanpak als OAuth-tokens): een Slack incoming-webhook-URL is een bearer secret.
   alertSlackWebhookUrl String?              @map("alert_slack_webhook_url")
+  // Standaard afzendergegevens voor feedback-campagnes (weergavenaam + antwoordadres;
+  // de mail zelf wordt technisch verstuurd via ons geverifieerde domein).
+  campaignSenderName   String?              @map("campaign_sender_name")
+  campaignReplyToEmail String?              @map("campaign_reply_to_email")
   users                User[]
   platformConnections  PlatformConnection[]
   reviews              Review[]
   topics               Topic[]
   alerts               Alert[]
+  campaigns            Campaign[]
 
   @@map("companies")
 }
@@ -156,4 +176,43 @@ model Alert {
 
   @@index([companyId])
   @@map("alerts")
+}
+
+model Campaign {
+  id           String              @id @default(uuid())
+  company      Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId    String              @map("company_id")
+  name         String
+  subject      String
+  bodyHtml     String              @map("body_html")
+  senderName   String              @map("sender_name")
+  replyToEmail String              @map("reply_to_email")
+  status       CampaignStatus      @default(draft)
+  createdAt    DateTime            @default(now()) @map("created_at")
+  sentAt       DateTime?           @map("sent_at")
+  recipients   CampaignRecipient[]
+
+  @@index([companyId])
+  @@map("campaigns")
+}
+
+model CampaignRecipient {
+  id             String                  @id @default(uuid())
+  campaign       Campaign                @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  campaignId     String                  @map("campaign_id")
+  email          String
+  name           String?
+  // Willekeurige, unieke token die het formulier-/afmeldlinkje identificeert (geen login nodig).
+  token          String                  @unique
+  status         CampaignRecipientStatus @default(pending)
+  sentAt         DateTime?               @map("sent_at")
+  openedAt       DateTime?               @map("opened_at")
+  reminderSentAt DateTime?               @map("reminder_sent_at")
+  respondedAt    DateTime?               @map("responded_at")
+  unsubscribedAt DateTime?               @map("unsubscribed_at")
+  // Losse verwijzing (geen formele relatie) naar de review die uit hun antwoord is ontstaan.
+  reviewId       String?                 @map("review_id")
+
+  @@index([campaignId])
+  @@map("campaign_recipients")
 }

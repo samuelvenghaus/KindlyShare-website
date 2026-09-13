@@ -2,20 +2,33 @@ import { NextResponse, type NextRequest } from "next/server";
 import { SESSION_COOKIE_NAME, verifySessionToken } from "@/lib/session";
 
 const PUBLIC_PATHS = ["/login", "/signup"];
+// Publieke routes zonder login: het token-gebaseerde feedbackformulier/afmeldlink die
+// klanten via een campagne-mail ontvangen, de bijbehorende tracking-pixel, en de
+// cron-endpoints die hun eigen Bearer-token-check hebben (geen sessie-cookie beschikbaar
+// bij een aanroep vanuit een externe scheduler).
+const PUBLIC_PREFIXES = ["/feedback-formulier/", "/afmelden/", "/api/campagnes/track/", "/api/cron/"];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const isPublicPath = PUBLIC_PATHS.some((path) => pathname === path);
+  const isAuthPath = PUBLIC_PATHS.some((path) => pathname === path);
+  const isPublicPrefix = PUBLIC_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+
+  // Publieke prefixes (feedbackformulier, afmelden, tracking-pixel, cron) werken altijd
+  // hetzelfde, ongeacht of er toevallig een sessie-cookie meekomt - een ingelogde gebruiker
+  // die zo'n link opent moet gewoon het formulier zien, niet naar /dashboard geredirect worden.
+  if (isPublicPrefix) {
+    return NextResponse.next();
+  }
 
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
   const session = token ? await verifySessionToken(token) : null;
 
-  if (!session && !isPublicPath) {
+  if (!session && !isAuthPath) {
     const loginUrl = new URL("/login", request.url);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (session && isPublicPath) {
+  if (session && isAuthPath) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 

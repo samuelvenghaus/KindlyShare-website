@@ -3,6 +3,7 @@ import { Card, CardHeader } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { CompanyNameForm } from "@/components/instellingen/CompanyNameForm";
 import { NotificationSettingsForm } from "@/components/instellingen/NotificationSettingsForm";
+import { CampaignSenderForm } from "@/components/instellingen/CampaignSenderForm";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { isEmailConfigured } from "@/lib/notifications/email";
@@ -63,6 +64,17 @@ export default async function InstellingenPage() {
             hasSlackWebhook={Boolean(company.alertSlackWebhookUrl)}
             emailConfigured={isEmailConfigured()}
             userEmails={company.users.map((u) => u.email)}
+          />
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardHeader
+            title="Feedbackcampagnes"
+            subtitle="Standaard afzendergegevens voor nieuwe feedbackcampagnes."
+          />
+          <CampaignSenderForm
+            currentSenderName={company.campaignSenderName ?? company.name}
+            currentReplyToEmail={company.campaignReplyToEmail ?? company.users[0]?.email ?? ""}
           />
         </Card>
       </div>

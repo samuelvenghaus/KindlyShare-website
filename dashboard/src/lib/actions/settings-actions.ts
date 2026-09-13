@@ -77,6 +77,38 @@ export async function updateNotificationSettingsAction(
   return { success: "Notificatie-instellingen opgeslagen." };
 }
 
+const campaignSenderDefaultsSchema = z.object({
+  campaignSenderName: z.string().trim().min(1, "Vul een afzendernaam in.").max(100),
+  campaignReplyToEmail: z.string().trim().email("Vul een geldig antwoordadres in."),
+});
+
+export async function updateCampaignSenderDefaultsAction(
+  _prevState: SettingsActionState,
+  formData: FormData
+): Promise<SettingsActionState> {
+  const session = await getSession();
+  if (!session) return { error: "Niet ingelogd." };
+
+  const parsed = campaignSenderDefaultsSchema.safeParse({
+    campaignSenderName: formData.get("campaignSenderName"),
+    campaignReplyToEmail: formData.get("campaignReplyToEmail"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Controleer de ingevulde gegevens." };
+  }
+
+  await prisma.company.update({
+    where: { id: session.companyId },
+    data: {
+      campaignSenderName: parsed.data.campaignSenderName,
+      campaignReplyToEmail: parsed.data.campaignReplyToEmail,
+    },
+  });
+
+  revalidatePath("/instellingen");
+  return { success: "Afzendergegevens voor campagnes opgeslagen." };
+}
+
 export async function sendTestSlackNotificationAction(
   _prevState: SettingsActionState,
   _formData: FormData
