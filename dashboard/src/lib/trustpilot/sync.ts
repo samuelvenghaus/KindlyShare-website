@@ -32,7 +32,8 @@ export async function syncTrustpilotConnection(connectionId: string): Promise<Sy
       rating: r.rating,
       text: r.text,
       postedAt: new Date(r.createdAt),
-    }))
+    })),
+    connection.id
   );
 
   await prisma.platformConnection.update({

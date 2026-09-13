@@ -99,3 +99,22 @@ export async function listReviews(accessToken: string, resourceName: string): Pr
 
   return reviews;
 }
+
+/**
+ * Plaatst (of overschrijft) het antwoord op een review. Google's My Business v4 API
+ * gebruikt dezelfde PUT voor zowel het aanmaken als het bijwerken van een antwoord.
+ * @param resourceName "accounts/{accountId}/locations/{locationId}", zoals bij listReviews.
+ */
+export async function replyToReview(accessToken: string, resourceName: string, reviewId: string, comment: string): Promise<void> {
+  const response = await fetch(`${MY_BUSINESS_V4_BASE}/${resourceName}/reviews/${reviewId}/reply`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ comment }),
+  });
+  if (!response.ok) {
+    throw new Error(`Antwoord plaatsen op Google mislukt (${response.status}): ${await response.text()}`);
+  }
+}

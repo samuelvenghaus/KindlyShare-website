@@ -32,7 +32,8 @@ export async function syncGoogleConnection(connectionId: string): Promise<SyncRe
       rating: r.rating,
       text: r.comment,
       postedAt: new Date(r.createTime),
-    }))
+    })),
+    connection.id
   );
 
   await prisma.platformConnection.update({

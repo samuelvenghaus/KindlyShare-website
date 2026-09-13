@@ -25,6 +25,9 @@ export interface Review {
   topics: string[];
   minutesAgo: number;
   flagged?: boolean;
+  canReply: boolean;
+  replyText: string | null;
+  repliedAt: number | null;
 }
 
 export interface TopicStat {

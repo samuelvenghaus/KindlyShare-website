@@ -1,6 +1,7 @@
 import "server-only";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import { canReplyToReview } from "@/lib/reviews/reply";
 import type { FeedbackType, Platform, Sentiment, TrendPoint } from "@/lib/types";
 
 export const FEEDBACK_PAGE_SIZE = 10;
@@ -34,6 +35,9 @@ export interface FeedbackReviewItem {
   feedbackType: FeedbackType | null;
   topics: string[];
   minutesAgo: number;
+  canReply: boolean;
+  replyText: string | null;
+  repliedAt: number | null;
 }
 
 export interface FeedbackPlatformPanel {
@@ -150,6 +154,9 @@ export async function getFeedbackData(companyId: string, filters: FeedbackFilter
       feedbackType: review.feedbackType,
       topics: review.topics.map((t) => t.topic.label),
       minutesAgo: Math.max(0, Math.round((now - timestamp.getTime()) / 60000)),
+      canReply: canReplyToReview(review.platform as Platform),
+      replyText: review.replyText,
+      repliedAt: review.repliedAt ? Math.max(0, Math.round((now - review.repliedAt.getTime()) / 60000)) : null,
     };
   });
 

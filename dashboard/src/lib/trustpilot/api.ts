@@ -58,3 +58,20 @@ export async function listReviews(accessToken: string, businessUnitId: string): 
 
   return reviews;
 }
+
+// Best-effort endpoint op basis van Trustpilot's gedocumenteerde Business Reviews API
+// (niet live geverifieerd in deze sandbox - zelfde beperking als listReviews hierboven).
+// Controleer dit tegen de actuele Trustpilot-documentatie voordat je hierop vertrouwt.
+export async function replyToReview(accessToken: string, businessUnitId: string, reviewId: string, message: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/business-units/${businessUnitId}/reviews/${reviewId}/reply`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ message }),
+  });
+  if (!response.ok) {
+    throw new Error(`Antwoord plaatsen op Trustpilot mislukt (${response.status}): ${await response.text()}`);
+  }
+}

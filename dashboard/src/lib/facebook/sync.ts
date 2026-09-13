@@ -35,7 +35,8 @@ export async function syncFacebookConnection(connectionId: string): Promise<Sync
       rating: r.recommends === true ? 5 : r.recommends === false ? 1 : null,
       text: r.reviewText,
       postedAt: new Date(r.createdTime),
-    }))
+    })),
+    connection.id
   );
 
   await prisma.platformConnection.update({

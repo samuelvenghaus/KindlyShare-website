@@ -1,22 +1,24 @@
 "use client";
 
 import { useState } from "react";
-import { Flag, MoreHorizontal } from "lucide-react";
+import { Flag, MoreHorizontal, Reply } from "lucide-react";
 import clsx from "clsx";
 import type { Review } from "@/lib/types";
 import { Avatar } from "@/components/ui/Avatar";
 import { StarRating } from "@/components/ui/StarRating";
 import { SentimentBadge, TopicBadge } from "@/components/ui/Badge";
 import { PlatformIcon } from "@/components/icons/PlatformIcon";
+import { ReviewReplyPanel } from "@/components/feedback/ReviewReplyPanel";
 import { formatTimeAgo } from "@/lib/dummy-data";
 
 export function ReviewRow({ review, view = "list" }: { review: Review; view?: "list" | "grid" }) {
   const [flagged, setFlagged] = useState(Boolean(review.flagged));
+  const [replyOpen, setReplyOpen] = useState(false);
 
   return (
     <div
       className={clsx(
-        "flex gap-4 rounded-xl border border-border bg-surface p-4",
+        "flex flex-wrap gap-4 rounded-xl border border-border bg-surface p-4",
         view === "grid" ? "flex-col" : "flex-col sm:flex-row sm:items-start"
       )}
     >
@@ -41,11 +43,38 @@ export function ReviewRow({ review, view = "list" }: { review: Review; view?: "l
             <TopicBadge key={topic} label={topic} />
           ))}
         </div>
+
+        {review.replyText && !replyOpen && (
+          <div className="mt-3 rounded-lg border border-border bg-surface-elevated p-3">
+            <p className="text-xs font-medium text-muted">
+              Jouw antwoord {review.repliedAt !== null ? `· ${formatTimeAgo(review.repliedAt)}` : ""}
+            </p>
+            <p className="mt-1 text-sm text-foreground">{review.replyText}</p>
+          </div>
+        )}
+
+        {replyOpen && (
+          <ReviewReplyPanel reviewId={review.id} existingReply={review.replyText} onDone={() => setReplyOpen(false)} />
+        )}
       </div>
 
       <div className="flex items-center gap-2 sm:w-auto sm:flex-col sm:items-end">
         <SentimentBadge sentiment={review.sentiment} />
         <div className="flex items-center gap-1">
+          {review.canReply && (
+            <button
+              onClick={() => setReplyOpen((v) => !v)}
+              className={clsx(
+                "flex h-8 w-8 items-center justify-center rounded-lg border",
+                replyOpen
+                  ? "border-brand/40 bg-brand/10 text-brand"
+                  : "border-border text-muted hover:text-foreground"
+              )}
+              aria-label={review.replyText ? "Antwoord bewerken" : "Reageren"}
+            >
+              <Reply size={14} />
+            </button>
+          )}
           <button
             onClick={() => setFlagged((v) => !v)}
             className={clsx(

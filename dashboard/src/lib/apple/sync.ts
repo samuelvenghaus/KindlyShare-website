@@ -33,7 +33,8 @@ export async function syncAppleConnection(connectionId: string): Promise<SyncRes
       rating: r.rating,
       text: r.text,
       postedAt: new Date(r.createdAt),
-    }))
+    })),
+    connection.id
   );
 
   await prisma.platformConnection.update({

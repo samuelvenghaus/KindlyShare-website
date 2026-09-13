@@ -32,7 +32,8 @@ export async function syncInstagramConnection(connectionId: string): Promise<Syn
       rating: null,
       text: c.text,
       postedAt: new Date(c.timestamp),
-    }))
+    })),
+    connection.id
   );
 
   await prisma.platformConnection.update({

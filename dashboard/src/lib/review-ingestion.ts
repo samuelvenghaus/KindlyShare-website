@@ -16,11 +16,15 @@ export interface IngestResult {
   updated: number;
 }
 
-/** Upsert + dedupe op (platform, externalReviewId) - gedeeld door alle platform-adapters. */
+/** Upsert + dedupe op (platform, externalReviewId) - gedeeld door alle platform-adapters.
+ * connectionId is optioneel (bv. niet van toepassing voor toekomstige platforms zonder
+ * koppeling) en wordt bewaard zodat een antwoord later via de juiste account/token
+ * teruggepost kan worden. */
 export async function ingestReviews(
   companyId: string,
   platform: Platform,
-  reviews: NormalizedReview[]
+  reviews: NormalizedReview[],
+  connectionId?: string
 ): Promise<IngestResult> {
   const externalIds = reviews.map((r) => r.externalId);
   const existing = await prisma.review.findMany({
@@ -39,12 +43,13 @@ export async function ingestReviews(
         companyId,
         platform,
         externalReviewId: review.externalId,
+        connectionId,
         author: review.authorName,
         rating: review.rating,
         text: review.text,
         postedAt: review.postedAt,
       },
-      update: { author: review.authorName, rating: review.rating, text: review.text },
+      update: { author: review.authorName, rating: review.rating, text: review.text, connectionId },
     });
 
     if (existingIds.has(review.externalId)) {

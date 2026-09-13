@@ -35,7 +35,8 @@ export async function syncTikTokConnection(connectionId: string): Promise<SyncRe
       rating: null,
       text: c.text,
       postedAt: c.createdAt,
-    }))
+    })),
+    connection.id
   );
 
   await prisma.platformConnection.update({
