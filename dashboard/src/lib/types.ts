@@ -15,6 +15,13 @@ export type FeedbackType = "praise" | "interest" | "problem" | "solution";
 
 export type Priority = "low" | "medium" | "high";
 
+export interface NoteItem {
+  id: string;
+  authorName: string;
+  text: string;
+  minutesAgo: number;
+}
+
 export interface Review {
   id: string;
   platform: Platform;
@@ -30,6 +37,7 @@ export interface Review {
   replyText: string | null;
   repliedAt: number | null;
   assignedToId: string | null;
+  notes: NoteItem[];
 }
 
 export interface TopicStat {

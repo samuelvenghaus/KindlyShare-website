@@ -10,7 +10,9 @@ import { SentimentBadge, TopicBadge } from "@/components/ui/Badge";
 import { PlatformIcon } from "@/components/icons/PlatformIcon";
 import { ReviewReplyPanel } from "@/components/feedback/ReviewReplyPanel";
 import { AssigneeSelect } from "@/components/ui/AssigneeSelect";
+import { NotesSection } from "@/components/ui/NotesSection";
 import { assignReviewAction } from "@/lib/actions/assignment-actions";
+import { addReviewNoteAction } from "@/lib/actions/note-actions";
 import { formatTimeAgo } from "@/lib/dummy-data";
 
 export function ReviewRow({
@@ -66,6 +68,13 @@ export function ReviewRow({
         {replyOpen && (
           <ReviewReplyPanel reviewId={review.id} existingReply={review.replyText} onDone={() => setReplyOpen(false)} />
         )}
+
+        <NotesSection
+          notes={review.notes}
+          hiddenFieldName="reviewId"
+          hiddenFieldValue={review.id}
+          action={addReviewNoteAction}
+        />
       </div>
 
       <div className="flex items-center gap-2 sm:w-auto sm:flex-col sm:items-end">

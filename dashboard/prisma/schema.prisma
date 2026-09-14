@@ -79,6 +79,7 @@ model Company {
   topics               Topic[]
   alerts               Alert[]
   campaigns            Campaign[]
+  notes                Note[]
 
   @@map("companies")
 }
@@ -94,6 +95,7 @@ model User {
   createdAt       DateTime @default(now()) @map("created_at")
   assignedReviews Review[]
   assignedAlerts  Alert[]
+  notes           Note[]
 
   @@index([companyId])
   @@map("users")
@@ -168,6 +170,7 @@ model Review {
   assignedTo       User?               @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
   assignedToId     String?             @map("assigned_to_id")
   topics           ReviewTopic[]
+  notes            Note[]
 
   @@unique([platform, externalReviewId])
   @@index([companyId])
@@ -214,10 +217,32 @@ model Alert {
   // Teamlid dat deze alert is toegewezen om op te pakken (null = niet toegewezen).
   assignedTo         User?    @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
   assignedToId       String?  @map("assigned_to_id")
+  notes              Note[]
 
   @@index([companyId])
   @@index([assignedToId])
   @@map("alerts")
+}
+
+// Interne notitie van een teamlid bij een review of alert - nooit zichtbaar voor de klant.
+// Precies één van review/alert moet ingevuld zijn (afgedwongen via een CHECK-constraint in
+// de migratie, Prisma's schema-DSL ondersteunt dit niet declaratief).
+model Note {
+  id        String   @id @default(uuid())
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String   @map("company_id")
+  review    Review?  @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reviewId  String?  @map("review_id")
+  alert     Alert?   @relation(fields: [alertId], references: [id], onDelete: Cascade)
+  alertId   String?  @map("alert_id")
+  author    User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  authorId  String?  @map("author_id")
+  text      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([reviewId])
+  @@index([alertId])
+  @@map("notes")
 }
 
 model Campaign {

@@ -2,7 +2,7 @@ import "server-only";
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { canReplyToReview } from "@/lib/reviews/reply";
-import type { FeedbackType, Platform, Sentiment, TrendPoint } from "@/lib/types";
+import type { FeedbackType, NoteItem, Platform, Sentiment, TrendPoint } from "@/lib/types";
 
 export const FEEDBACK_PAGE_SIZE = 10;
 const TREND_WEEKS = 12;
@@ -39,6 +39,7 @@ export interface FeedbackReviewItem {
   replyText: string | null;
   repliedAt: number | null;
   assignedToId: string | null;
+  notes: NoteItem[];
 }
 
 export interface FeedbackPlatformPanel {
@@ -138,7 +139,10 @@ export async function getFeedbackData(companyId: string, filters: FeedbackFilter
       orderBy: { postedAt: sort === "oldest" ? "asc" : "desc" },
       skip: (page - 1) * FEEDBACK_PAGE_SIZE,
       take: FEEDBACK_PAGE_SIZE,
-      include: { topics: { include: { topic: true } } },
+      include: {
+        topics: { include: { topic: true } },
+        notes: { include: { author: true }, orderBy: { createdAt: "asc" } },
+      },
     }),
   ]);
 
@@ -159,6 +163,12 @@ export async function getFeedbackData(companyId: string, filters: FeedbackFilter
       replyText: review.replyText,
       repliedAt: review.repliedAt ? Math.max(0, Math.round((now - review.repliedAt.getTime()) / 60000)) : null,
       assignedToId: review.assignedToId,
+      notes: review.notes.map((note) => ({
+        id: note.id,
+        authorName: note.author?.name ?? "Verwijderde gebruiker",
+        text: note.text,
+        minutesAgo: Math.max(0, Math.round((now - note.createdAt.getTime()) / 60000)),
+      })),
     };
   });
 

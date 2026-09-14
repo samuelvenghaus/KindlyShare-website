@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import type { Alert as UiAlert, Priority } from "@/lib/types";
+import type { Alert as UiAlert, NoteItem, Priority } from "@/lib/types";
 
 function buildImpactText(topicLabel: string, increasePercentage: number, windowDays: number): string {
   return (
@@ -47,15 +47,17 @@ export interface AlertListItem {
   createdAt: Date;
   aiSuggestion: string | null;
   assignedToId: string | null;
+  notes: NoteItem[];
 }
 
 export async function listAlerts(companyId: string): Promise<AlertListItem[]> {
   const alerts = await prisma.alert.findMany({
     where: { companyId },
     orderBy: [{ resolved: "asc" }, { createdAt: "desc" }],
-    include: { topic: true },
+    include: { topic: true, notes: { include: { author: true }, orderBy: { createdAt: "asc" } } },
   });
 
+  const now = Date.now();
   return alerts.map((alert) => ({
     id: alert.id,
     topicLabel: alert.topic?.label ?? "Onbekend onderwerp",
@@ -67,5 +69,11 @@ export async function listAlerts(companyId: string): Promise<AlertListItem[]> {
     createdAt: alert.createdAt,
     aiSuggestion: alert.aiSuggestion,
     assignedToId: alert.assignedToId,
+    notes: alert.notes.map((note) => ({
+      id: note.id,
+      authorName: note.author?.name ?? "Verwijderde gebruiker",
+      text: note.text,
+      minutesAgo: Math.max(0, Math.round((now - note.createdAt.getTime()) / 60000)),
+    })),
   }));
 }

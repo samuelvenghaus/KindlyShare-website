@@ -3,12 +3,14 @@ import { PageHeader, DateRangeButton, UserMenu } from "@/components/layout/Heade
 import { Card, CardHeader } from "@/components/ui/Card";
 import { PriorityBadge } from "@/components/ui/Badge";
 import { AssigneeSelect } from "@/components/ui/AssigneeSelect";
+import { NotesSection } from "@/components/ui/NotesSection";
 import { getSession } from "@/lib/auth";
 import { listAlerts } from "@/lib/data/alerts";
 import { getTeamMembers } from "@/lib/data/team";
 import { formatTimeAgo, minutesSince } from "@/lib/dummy-data";
 import { resolveAlertAction } from "@/lib/actions/alert-actions";
 import { assignAlertAction } from "@/lib/actions/assignment-actions";
+import { addAlertNoteAction } from "@/lib/actions/note-actions";
 
 export default async function AlertsPage() {
   const session = await getSession();
@@ -87,6 +89,13 @@ export default async function AlertsPage() {
                   </button>
                 </form>
               )}
+
+              <NotesSection
+                notes={alert.notes}
+                hiddenFieldName="alertId"
+                hiddenFieldValue={alert.id}
+                action={addAlertNoteAction}
+              />
             </Card>
           ))}
         </div>
