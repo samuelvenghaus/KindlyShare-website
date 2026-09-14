@@ -84,14 +84,16 @@ model Company {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  company      Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId    String   @map("company_id")
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  name         String
-  role         UserRole @default(owner)
-  createdAt    DateTime @default(now()) @map("created_at")
+  id              String   @id @default(uuid())
+  company         Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId       String   @map("company_id")
+  email           String   @unique
+  passwordHash    String   @map("password_hash")
+  name            String
+  role            UserRole @default(owner)
+  createdAt       DateTime @default(now()) @map("created_at")
+  assignedReviews Review[]
+  assignedAlerts  Alert[]
 
   @@index([companyId])
   @@map("users")
@@ -162,11 +164,15 @@ model Review {
   // Google/Trustpilot ondersteunen dit via hun API).
   replyText        String?             @map("reply_text")
   repliedAt        DateTime?           @map("replied_at")
+  // Teamlid dat deze review is toegewezen om op te pakken (null = niet toegewezen).
+  assignedTo       User?               @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedToId     String?             @map("assigned_to_id")
   topics           ReviewTopic[]
 
   @@unique([platform, externalReviewId])
   @@index([companyId])
   @@index([connectionId])
+  @@index([assignedToId])
   @@map("reviews")
 }
 
@@ -205,8 +211,12 @@ model Alert {
   aiSuggestion       String?  @map("ai_suggestion")
   createdAt          DateTime @default(now()) @map("created_at")
   resolved           Boolean  @default(false)
+  // Teamlid dat deze alert is toegewezen om op te pakken (null = niet toegewezen).
+  assignedTo         User?    @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedToId       String?  @map("assigned_to_id")
 
   @@index([companyId])
+  @@index([assignedToId])
   @@map("alerts")
 }
 

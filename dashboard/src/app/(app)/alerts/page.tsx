@@ -2,14 +2,19 @@ import { Bell, CheckCircle2 } from "lucide-react";
 import { PageHeader, DateRangeButton, UserMenu } from "@/components/layout/HeaderWidgets";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { PriorityBadge } from "@/components/ui/Badge";
+import { AssigneeSelect } from "@/components/ui/AssigneeSelect";
 import { getSession } from "@/lib/auth";
 import { listAlerts } from "@/lib/data/alerts";
+import { getTeamMembers } from "@/lib/data/team";
 import { formatTimeAgo, minutesSince } from "@/lib/dummy-data";
 import { resolveAlertAction } from "@/lib/actions/alert-actions";
+import { assignAlertAction } from "@/lib/actions/assignment-actions";
 
 export default async function AlertsPage() {
   const session = await getSession();
-  const alerts = session ? await listAlerts(session.companyId) : [];
+  const [alerts, teamMembers] = session
+    ? await Promise.all([listAlerts(session.companyId), getTeamMembers(session.companyId)])
+    : [[], []];
 
   return (
     <>
@@ -54,6 +59,13 @@ export default async function AlertsPage() {
                   ) : (
                     <PriorityBadge priority={alert.priority} />
                   )}
+                  <AssigneeSelect
+                    hiddenFieldName="alertId"
+                    hiddenFieldValue={alert.id}
+                    assignedToId={alert.assignedToId}
+                    teamMembers={teamMembers}
+                    action={assignAlertAction}
+                  />
                 </div>
               </div>
 

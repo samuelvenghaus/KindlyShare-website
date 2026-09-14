@@ -9,9 +9,19 @@ import { StarRating } from "@/components/ui/StarRating";
 import { SentimentBadge, TopicBadge } from "@/components/ui/Badge";
 import { PlatformIcon } from "@/components/icons/PlatformIcon";
 import { ReviewReplyPanel } from "@/components/feedback/ReviewReplyPanel";
+import { AssigneeSelect } from "@/components/ui/AssigneeSelect";
+import { assignReviewAction } from "@/lib/actions/assignment-actions";
 import { formatTimeAgo } from "@/lib/dummy-data";
 
-export function ReviewRow({ review, view = "list" }: { review: Review; view?: "list" | "grid" }) {
+export function ReviewRow({
+  review,
+  view = "list",
+  teamMembers,
+}: {
+  review: Review;
+  view?: "list" | "grid";
+  teamMembers: { id: string; name: string }[];
+}) {
   const [flagged, setFlagged] = useState(Boolean(review.flagged));
   const [replyOpen, setReplyOpen] = useState(false);
 
@@ -60,6 +70,13 @@ export function ReviewRow({ review, view = "list" }: { review: Review; view?: "l
 
       <div className="flex items-center gap-2 sm:w-auto sm:flex-col sm:items-end">
         <SentimentBadge sentiment={review.sentiment} />
+        <AssigneeSelect
+          hiddenFieldName="reviewId"
+          hiddenFieldValue={review.id}
+          assignedToId={review.assignedToId}
+          teamMembers={teamMembers}
+          action={assignReviewAction}
+        />
         <div className="flex items-center gap-1">
           {review.canReply && (
             <button

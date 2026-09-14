@@ -29,6 +29,7 @@ export interface Review {
   canReply: boolean;
   replyText: string | null;
   repliedAt: number | null;
+  assignedToId: string | null;
 }
 
 export interface TopicStat {

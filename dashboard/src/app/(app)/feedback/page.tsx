@@ -14,6 +14,7 @@ import { PLATFORM_LABELS } from "@/lib/dummy-data";
 import type { Platform, Sentiment } from "@/lib/types";
 import { CHART_COLORS } from "@/lib/chart-colors";
 import { getSession } from "@/lib/auth";
+import { getTeamMembers } from "@/lib/data/team";
 import {
   FEEDBACK_PAGE_SIZE,
   getFeedbackData,
@@ -60,9 +61,12 @@ export default async function FeedbackPage({
   const page = Math.max(1, Number(params.page) || 1);
 
   const session = await getSession();
-  const data = session
-    ? await getFeedbackData(session.companyId, { tab, q, sentiment, score, category, sort, page })
-    : null;
+  const [data, teamMembers] = session
+    ? await Promise.all([
+        getFeedbackData(session.companyId, { tab, q, sentiment, score, category, sort, page }),
+        getTeamMembers(session.companyId),
+      ])
+    : [null, []];
 
   const totalPages = data ? Math.max(1, Math.ceil(data.totalCount / FEEDBACK_PAGE_SIZE)) : 1;
   const isSinglePlatform = tab !== "all";
@@ -247,7 +251,7 @@ export default async function FeedbackPage({
               ) : (
                 <div className={clsx(view === "grid" ? "grid grid-cols-1 gap-4 xl:grid-cols-2" : "space-y-3")}>
                   {data.reviews.map((review) => (
-                    <ReviewRow key={review.id} review={review} view={view} />
+                    <ReviewRow key={review.id} review={review} view={view} teamMembers={teamMembers} />
                   ))}
                 </div>
               )}

@@ -46,6 +46,7 @@ export interface AlertListItem {
   resolved: boolean;
   createdAt: Date;
   aiSuggestion: string | null;
+  assignedToId: string | null;
 }
 
 export async function listAlerts(companyId: string): Promise<AlertListItem[]> {
@@ -65,5 +66,6 @@ export async function listAlerts(companyId: string): Promise<AlertListItem[]> {
     resolved: alert.resolved,
     createdAt: alert.createdAt,
     aiSuggestion: alert.aiSuggestion,
+    assignedToId: alert.assignedToId,
   }));
 }

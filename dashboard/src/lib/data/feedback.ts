@@ -38,6 +38,7 @@ export interface FeedbackReviewItem {
   canReply: boolean;
   replyText: string | null;
   repliedAt: number | null;
+  assignedToId: string | null;
 }
 
 export interface FeedbackPlatformPanel {
@@ -157,6 +158,7 @@ export async function getFeedbackData(companyId: string, filters: FeedbackFilter
       canReply: canReplyToReview(review.platform as Platform),
       replyText: review.replyText,
       repliedAt: review.repliedAt ? Math.max(0, Math.round((now - review.repliedAt.getTime()) / 60000)) : null,
+      assignedToId: review.assignedToId,
     };
   });
 
