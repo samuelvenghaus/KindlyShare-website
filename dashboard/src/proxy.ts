@@ -5,9 +5,17 @@ const PUBLIC_PATHS = ["/login", "/signup"];
 // Publieke routes zonder login: het token-gebaseerde feedbackformulier/afmeldlink die
 // klanten via een campagne-mail ontvangen, de bijbehorende tracking-pixel, de
 // cron-endpoints die hun eigen Bearer-token-check hebben (geen sessie-cookie beschikbaar
-// bij een aanroep vanuit een externe scheduler), en de embed-widget die bedrijven op hun
-// eigen website plaatsen (wordt in een <iframe> geladen, dus ook zonder sessie-cookie).
-const PUBLIC_PREFIXES = ["/feedback-formulier/", "/afmelden/", "/api/campagnes/track/", "/api/cron/", "/beoordeel/"];
+// bij een aanroep vanuit een externe scheduler), de embed-widget die bedrijven op hun
+// eigen website plaatsen (wordt in een <iframe> geladen, dus ook zonder sessie-cookie),
+// en de teamuitnodigingslink (moet werken ongeacht een eventuele bestaande sessie).
+const PUBLIC_PREFIXES = [
+  "/feedback-formulier/",
+  "/afmelden/",
+  "/api/campagnes/track/",
+  "/api/cron/",
+  "/beoordeel/",
+  "/uitnodiging/",
+];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;

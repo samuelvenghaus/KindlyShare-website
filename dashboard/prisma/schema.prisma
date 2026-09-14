@@ -73,6 +73,7 @@ model Company {
   // het bedrijf ingebed kan worden (null = widget nog niet geactiveerd).
   widgetToken          String?              @unique @map("widget_token")
   users                User[]
+  invites              Invite[]
   platformConnections  PlatformConnection[]
   reviews              Review[]
   topics               Topic[]
@@ -94,6 +95,22 @@ model User {
 
   @@index([companyId])
   @@map("users")
+}
+
+model Invite {
+  id          String    @id @default(uuid())
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String    @map("company_id")
+  email       String
+  // Willekeurig, uniek token voor de publieke uitnodigingslink.
+  token       String    @unique
+  invitedBy   String?   @map("invited_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  expiresAt   DateTime  @map("expires_at")
+  acceptedAt  DateTime? @map("accepted_at")
+
+  @@index([companyId])
+  @@map("invites")
 }
 
 model PlatformConnection {

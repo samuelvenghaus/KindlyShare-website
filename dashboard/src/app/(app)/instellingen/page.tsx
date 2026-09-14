@@ -6,6 +6,7 @@ import { NotificationSettingsForm } from "@/components/instellingen/Notification
 import { CampaignSenderForm } from "@/components/instellingen/CampaignSenderForm";
 import { ThemeSettingsForm } from "@/components/instellingen/ThemeSettingsForm";
 import { WidgetSettingsForm } from "@/components/instellingen/WidgetSettingsForm";
+import { TeamInviteForm } from "@/components/instellingen/TeamInviteForm";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { isEmailConfigured } from "@/lib/notifications/email";
@@ -16,10 +17,16 @@ export default async function InstellingenPage() {
   const session = await getSession();
   if (!session) return null;
 
-  const company = await prisma.company.findUniqueOrThrow({
-    where: { id: session.companyId },
-    include: { users: { orderBy: { createdAt: "asc" } } },
-  });
+  const [company, pendingInvites] = await Promise.all([
+    prisma.company.findUniqueOrThrow({
+      where: { id: session.companyId },
+      include: { users: { orderBy: { createdAt: "asc" } } },
+    }),
+    prisma.invite.findMany({
+      where: { companyId: session.companyId, acceptedAt: null },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
 
   return (
     <>
@@ -56,9 +63,10 @@ export default async function InstellingenPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-xs text-muted-foreground">
-            Teamleden uitnodigen komt in een latere fase beschikbaar.
-          </p>
+          <TeamInviteForm
+            pendingInvites={pendingInvites.map((i) => ({ id: i.id, email: i.email }))}
+            emailConfigured={isEmailConfigured()}
+          />
         </Card>
 
         <Card className="lg:col-span-2">
