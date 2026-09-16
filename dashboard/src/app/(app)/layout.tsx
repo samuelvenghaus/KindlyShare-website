@@ -13,16 +13,19 @@ export default async function AppGroupLayout({ children }: { children: ReactNode
   }
 
   const alertCount = await getUnresolvedAlertCount(session.companyId);
+  const role = session.role === "owner" ? "owner" : "member";
 
   return (
     <CurrentUserProvider
       user={{
         name: session.name,
         email: session.email,
-        role: session.role === "owner" ? "owner" : "member",
+        role,
       }}
     >
-      <AppShell alertCount={alertCount}>{children}</AppShell>
+      <AppShell alertCount={alertCount} role={role}>
+        {children}
+      </AppShell>
     </CurrentUserProvider>
   );
 }

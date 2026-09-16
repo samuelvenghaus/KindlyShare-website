@@ -4,7 +4,7 @@ import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
+import { getSession, isOwner } from "@/lib/auth";
 import { sendTeamInviteEmail } from "@/lib/notifications/email";
 
 export interface TeamActionState {
@@ -12,6 +12,8 @@ export interface TeamActionState {
   success?: string;
   inviteUrl?: string;
 }
+
+const NOT_OWNER_ERROR = "Alleen de eigenaar van het account kan teamleden uitnodigen of beheren.";
 
 const INVITE_DURATION_DAYS = 7;
 
@@ -29,6 +31,7 @@ export async function inviteTeamMemberAction(
 ): Promise<TeamActionState> {
   const session = await getSession();
   if (!session) return { error: "Niet ingelogd." };
+  if (!isOwner(session)) return { error: NOT_OWNER_ERROR };
 
   const parsed = inviteSchema.safeParse({ email: formData.get("email") });
   if (!parsed.success) {
@@ -80,6 +83,7 @@ export async function cancelInviteAction(
 ): Promise<TeamActionState> {
   const session = await getSession();
   if (!session) return { error: "Niet ingelogd." };
+  if (!isOwner(session)) return { error: NOT_OWNER_ERROR };
 
   const inviteId = formData.get("inviteId");
   if (typeof inviteId !== "string") return { error: "Ongeldige uitnodiging." };

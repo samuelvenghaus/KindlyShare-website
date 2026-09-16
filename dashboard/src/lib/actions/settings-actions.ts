@@ -4,7 +4,7 @@ import { randomBytes } from "crypto";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
+import { getSession, isOwner } from "@/lib/auth";
 import { encryptSecret, decryptSecret } from "@/lib/crypto";
 import { sendAlertSlackMessage } from "@/lib/notifications/slack";
 
@@ -12,6 +12,8 @@ export interface SettingsActionState {
   error?: string;
   success?: string;
 }
+
+const NOT_OWNER_ERROR = "Alleen de eigenaar van het account kan deze instelling wijzigen.";
 
 const companyNameSchema = z.object({
   name: z.string().trim().min(1, "Vul een bedrijfsnaam in.").max(200),
@@ -23,6 +25,7 @@ export async function updateCompanyNameAction(
 ): Promise<SettingsActionState> {
   const session = await getSession();
   if (!session) return { error: "Niet ingelogd." };
+  if (!isOwner(session)) return { error: NOT_OWNER_ERROR };
 
   const parsed = companyNameSchema.safeParse({ name: formData.get("name") });
   if (!parsed.success) {
@@ -55,6 +58,7 @@ export async function updateNotificationSettingsAction(
 ): Promise<SettingsActionState> {
   const session = await getSession();
   if (!session) return { error: "Niet ingelogd." };
+  if (!isOwner(session)) return { error: NOT_OWNER_ERROR };
 
   const parsed = notificationSettingsSchema.safeParse({
     alertEmailEnabled: formData.get("alertEmailEnabled") ?? undefined,
@@ -89,6 +93,7 @@ export async function updateCampaignSenderDefaultsAction(
 ): Promise<SettingsActionState> {
   const session = await getSession();
   if (!session) return { error: "Niet ingelogd." };
+  if (!isOwner(session)) return { error: NOT_OWNER_ERROR };
 
   const parsed = campaignSenderDefaultsSchema.safeParse({
     campaignSenderName: formData.get("campaignSenderName"),
@@ -118,6 +123,7 @@ export async function generateWidgetTokenAction(
 ): Promise<SettingsActionState> {
   const session = await getSession();
   if (!session) return { error: "Niet ingelogd." };
+  if (!isOwner(session)) return { error: NOT_OWNER_ERROR };
 
   await prisma.company.update({
     where: { id: session.companyId },
@@ -134,6 +140,7 @@ export async function sendTestSlackNotificationAction(
 ): Promise<SettingsActionState> {
   const session = await getSession();
   if (!session) return { error: "Niet ingelogd." };
+  if (!isOwner(session)) return { error: NOT_OWNER_ERROR };
 
   const company = await prisma.company.findUnique({ where: { id: session.companyId } });
   if (!company?.alertSlackWebhookUrl) {

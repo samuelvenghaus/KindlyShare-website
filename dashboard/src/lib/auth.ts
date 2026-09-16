@@ -31,3 +31,8 @@ export async function getSession(): Promise<SessionPayload | null> {
   if (!token) return null;
   return verifySessionToken(token);
 }
+
+/** Alleen de eigenaar van het bedrijf mag bedrijfsbrede instellingen, team en facturatie beheren. */
+export function isOwner(session: SessionPayload): boolean {
+  return session.role === "owner";
+}

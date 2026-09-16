@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { PageHeader, UserMenu } from "@/components/layout/HeaderWidgets";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
@@ -8,7 +9,7 @@ import { ThemeSettingsForm } from "@/components/instellingen/ThemeSettingsForm";
 import { WidgetSettingsForm } from "@/components/instellingen/WidgetSettingsForm";
 import { TeamInviteForm } from "@/components/instellingen/TeamInviteForm";
 import { prisma } from "@/lib/prisma";
-import { getSession } from "@/lib/auth";
+import { getSession, isOwner } from "@/lib/auth";
 import { isEmailConfigured } from "@/lib/notifications/email";
 
 const ROLE_LABELS = { owner: "Eigenaar", member: "Teamlid" } as const;
@@ -16,6 +17,7 @@ const ROLE_LABELS = { owner: "Eigenaar", member: "Teamlid" } as const;
 export default async function InstellingenPage() {
   const session = await getSession();
   if (!session) return null;
+  if (!isOwner(session)) redirect("/dashboard");
 
   const [company, pendingInvites] = await Promise.all([
     prisma.company.findUniqueOrThrow({

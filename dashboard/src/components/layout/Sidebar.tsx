@@ -26,11 +26,20 @@ const NAV_ITEMS = [
   { href: "/campagnes", label: "Campagnes", icon: Mail },
   { href: "/rapporten", label: "Rapporten", icon: FileText },
   { href: "/kanalen", label: "Kanalen", icon: Radio },
-  { href: "/instellingen", label: "Instellingen", icon: Settings },
+  { href: "/instellingen", label: "Instellingen", icon: Settings, ownerOnly: true },
 ];
 
-function SidebarContent({ onNavigate, alertCount = 0 }: { onNavigate?: () => void; alertCount?: number }) {
+function SidebarContent({
+  onNavigate,
+  alertCount = 0,
+  role = "member",
+}: {
+  onNavigate?: () => void;
+  alertCount?: number;
+  role?: "owner" | "member";
+}) {
   const pathname = usePathname();
+  const navItems = NAV_ITEMS.filter((item) => !item.ownerOnly || role === "owner");
 
   return (
     <div className="flex h-full flex-col">
@@ -41,7 +50,7 @@ function SidebarContent({ onNavigate, alertCount = 0 }: { onNavigate?: () => voi
       </div>
 
       <nav className="flex-1 space-y-1 px-3">
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const active = pathname === item.href || pathname?.startsWith(`${item.href}/`);
           const Icon = item.icon;
           const badge = item.href === "/alerts" && alertCount > 0 ? alertCount : null;
@@ -71,31 +80,33 @@ function SidebarContent({ onNavigate, alertCount = 0 }: { onNavigate?: () => voi
         })}
       </nav>
 
-      <div className="p-3">
-        <div className="rounded-xl border border-border bg-surface-elevated p-4">
-          <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-brand/15 text-brand">
-            <Sparkles size={16} />
+      {role === "owner" && (
+        <div className="p-3">
+          <div className="rounded-xl border border-border bg-surface-elevated p-4">
+            <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-brand/15 text-brand">
+              <Sparkles size={16} />
+            </div>
+            <p className="text-sm font-medium text-foreground">Upgrade je plan</p>
+            <p className="mt-1 text-xs text-muted">Ontgrendel meer inzichten en hogere limieten.</p>
+            <Link
+              href="/instellingen"
+              onClick={onNavigate}
+              className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-brand hover:underline"
+            >
+              Meer info <ArrowRight size={12} />
+            </Link>
           </div>
-          <p className="text-sm font-medium text-foreground">Upgrade je plan</p>
-          <p className="mt-1 text-xs text-muted">Ontgrendel meer inzichten en hogere limieten.</p>
-          <Link
-            href="/instellingen"
-            onClick={onNavigate}
-            className="mt-3 inline-flex items-center gap-1 text-xs font-medium text-brand hover:underline"
-          >
-            Meer info <ArrowRight size={12} />
-          </Link>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-export function Sidebar({ alertCount = 0 }: { alertCount?: number }) {
+export function Sidebar({ alertCount = 0, role = "member" }: { alertCount?: number; role?: "owner" | "member" }) {
   return (
     <aside className="hidden w-64 shrink-0 border-r border-border bg-background md:block">
       <div className="sticky top-0 h-screen">
-        <SidebarContent alertCount={alertCount} />
+        <SidebarContent alertCount={alertCount} role={role} />
       </div>
     </aside>
   );
@@ -105,10 +116,12 @@ export function MobileSidebar({
   open,
   onClose,
   alertCount = 0,
+  role = "member",
 }: {
   open: boolean;
   onClose: () => void;
   alertCount?: number;
+  role?: "owner" | "member";
 }) {
   if (!open) return null;
   return (
@@ -122,7 +135,7 @@ export function MobileSidebar({
         >
           <X size={18} />
         </button>
-        <SidebarContent onNavigate={onClose} alertCount={alertCount} />
+        <SidebarContent onNavigate={onClose} alertCount={alertCount} role={role} />
       </div>
     </div>
   );
