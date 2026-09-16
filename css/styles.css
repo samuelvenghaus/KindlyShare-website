@@ -239,11 +239,12 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 9px 14px;
+  padding: 9px 12px;
   border-radius: 8px;
-  font-size: 14.5px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-secondary);
+  white-space: nowrap;
   transition: color 0.15s ease, background 0.15s ease;
 }
 
@@ -2239,6 +2240,66 @@ table.compare-table {
   color: #14110a;
 }
 
+/* ---------- Feature row (alternating feature tour) ---------- */
+
+.feature-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.feature-row.reverse .feature-row-media {
+  order: -1;
+}
+
+.feature-row-copy .eyebrow {
+  display: inline-block;
+  margin-bottom: 14px;
+}
+
+.feature-row-copy h2 {
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  margin-bottom: 14px;
+}
+
+.feature-row-copy p {
+  font-size: 15.5px;
+  color: var(--text-secondary);
+  margin-bottom: 18px;
+}
+
+.feature-row-copy .feature-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.feature-row-copy .feature-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.feature-row-media.app-frame {
+  margin: 0;
+}
+
+.feature-row-media img {
+  display: block;
+  width: 100%;
+}
+
+.feature-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
+}
+
 /* ---------- Channel grid (per-channel drill down) ---------- */
 
 .channel-grid {
@@ -2343,9 +2404,22 @@ table.compare-table {
   .channel-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  .feature-row {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .feature-row-media {
+    order: -1;
+  }
+
+  .feature-rows {
+    gap: 64px;
+  }
 }
 
-@media (max-width: 860px) {
+@media (max-width: 1040px) {
   .fa-sidebar {
     display: none;
   }
