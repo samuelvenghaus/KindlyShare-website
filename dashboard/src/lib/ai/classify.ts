@@ -4,7 +4,11 @@ import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { getAnthropicClient } from "./client";
 import { prisma } from "@/lib/prisma";
 
-const CLASSIFICATION_MODEL = "claude-opus-5";
+// Sonnet 5 i.p.v. Opus 5: dit draait bij elke binnenkomende review (hoog volume), en is een
+// begrensde labeltaak (vast schema, effort "low") waarbij Sonnet net zo goed presteert voor
+// ~60% lagere kosten. AI-oplossingssuggesties/replies/campagnemails blijven bewust op Opus 5 -
+// die draaien alleen op aanvraag en de kwaliteit daarvan weegt zwaarder dan de kostenbesparing.
+const CLASSIFICATION_MODEL = "claude-sonnet-5";
 
 const ReviewClassificationSchema = z.object({
   isRelevant: z
