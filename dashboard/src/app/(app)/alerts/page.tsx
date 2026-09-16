@@ -1,4 +1,5 @@
-import { Bell, CheckCircle2 } from "lucide-react";
+import { Bell } from "lucide-react";
+import clsx from "clsx";
 import { PageHeader, DateRangeButton, UserMenu } from "@/components/layout/HeaderWidgets";
 import { Card, CardHeader } from "@/components/ui/Card";
 import { PriorityBadge } from "@/components/ui/Badge";
@@ -7,10 +8,13 @@ import { NotesSection } from "@/components/ui/NotesSection";
 import { getSession } from "@/lib/auth";
 import { listAlerts } from "@/lib/data/alerts";
 import { getTeamMembers } from "@/lib/data/team";
-import { formatTimeAgo, minutesSince } from "@/lib/dummy-data";
-import { resolveAlertAction } from "@/lib/actions/alert-actions";
+import { formatTimeAgo, minutesSince, ALERT_STATUS_LABELS } from "@/lib/dummy-data";
+import { updateAlertStatusAction } from "@/lib/actions/alert-actions";
 import { assignAlertAction } from "@/lib/actions/assignment-actions";
 import { addAlertNoteAction } from "@/lib/actions/note-actions";
+import type { AlertStatus } from "@/lib/types";
+
+const STATUS_OPTIONS: AlertStatus[] = ["open", "in_progress", "resolved"];
 
 export default async function AlertsPage() {
   const session = await getSession();
@@ -45,7 +49,7 @@ export default async function AlertsPage() {
       ) : (
         <div className="space-y-4">
           {alerts.map((alert) => (
-            <Card key={alert.id} className={alert.resolved ? "opacity-60" : undefined}>
+            <Card key={alert.id} className={alert.status === "resolved" ? "opacity-60" : undefined}>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <CardHeader
@@ -54,13 +58,7 @@ export default async function AlertsPage() {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  {alert.resolved ? (
-                    <span className="flex items-center gap-1.5 rounded-full bg-positive-bg px-3 py-1 text-xs font-semibold text-positive">
-                      <CheckCircle2 size={13} /> Opgelost
-                    </span>
-                  ) : (
-                    <PriorityBadge priority={alert.priority} />
-                  )}
+                  <PriorityBadge priority={alert.priority} />
                   <AssigneeSelect
                     hiddenFieldName="alertId"
                     hiddenFieldValue={alert.id}
@@ -78,17 +76,26 @@ export default async function AlertsPage() {
                 </div>
               )}
 
-              {!alert.resolved && (
-                <form action={resolveAlertAction} className="mt-4">
-                  <input type="hidden" name="alertId" value={alert.id} />
-                  <button
-                    type="submit"
-                    className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-surface"
-                  >
-                    Markeer als opgelost
-                  </button>
-                </form>
-              )}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {STATUS_OPTIONS.map((status) => (
+                  <form key={status} action={updateAlertStatusAction}>
+                    <input type="hidden" name="alertId" value={alert.id} />
+                    <input type="hidden" name="status" value={status} />
+                    <button
+                      type="submit"
+                      disabled={alert.status === status}
+                      className={clsx(
+                        "rounded-lg border px-3 py-1.5 text-xs font-medium",
+                        alert.status === status
+                          ? "border-brand bg-brand/10 text-brand"
+                          : "border-border text-foreground hover:bg-surface"
+                      )}
+                    >
+                      {ALERT_STATUS_LABELS[status]}
+                    </button>
+                  </form>
+                ))}
+              </div>
 
               <NotesSection
                 notes={alert.notes}

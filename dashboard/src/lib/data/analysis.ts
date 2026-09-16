@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import type { Platform, Priority, Sentiment, TrendPoint } from "@/lib/types";
+import type { AlertStatus, Platform, Priority, Sentiment, TrendPoint } from "@/lib/types";
 import type { ReportPeriod } from "./reports";
 
 const PERIOD_DAYS: Record<ReportPeriod, number> = { week: 7, month: 30, quarter: 90 };
@@ -99,7 +99,7 @@ export interface AiSolution {
   reviewCount: number;
   suggestion: string;
   createdAt: Date;
-  resolved: boolean;
+  status: AlertStatus;
 }
 
 export interface AnalysisData {
@@ -206,7 +206,7 @@ export async function getAnalysisData(companyId: string, period: ReportPeriod): 
     reviewCount: alert.reviewCount,
     suggestion: alert.aiSuggestion ?? "Nog geen AI-suggestie beschikbaar voor deze alert.",
     createdAt: alert.createdAt,
-    resolved: alert.resolved,
+    status: alert.status,
   }));
 
   return {

@@ -8,7 +8,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { PriorityBadge } from "@/components/ui/Badge";
 import { DonutChart } from "@/components/charts/DonutChart";
 import { PlatformIcon } from "@/components/icons/PlatformIcon";
-import { PLATFORM_SHORT_LABELS, SENTIMENT_LABELS, formatTimeAgo, minutesSince } from "@/lib/dummy-data";
+import { PLATFORM_SHORT_LABELS, SENTIMENT_LABELS, ALERT_STATUS_LABELS, formatTimeAgo, minutesSince } from "@/lib/dummy-data";
 import { CHART_COLORS } from "@/lib/chart-colors";
 import { getSession } from "@/lib/auth";
 import { getReportData, REPORT_PERIOD_LABELS, type ReportPeriod } from "@/lib/data/reports";
@@ -129,7 +129,7 @@ export default async function RapportenPage({
               <CardHeader title="Alerts" />
               <p className="text-2xl font-semibold tracking-tight">{data.alerts.length}</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {data.alerts.filter((a) => !a.resolved).length} nog open
+                {data.alerts.filter((a) => a.status !== "resolved").length} nog open
               </p>
             </Card>
             <Card>
@@ -251,8 +251,10 @@ export default async function RapportenPage({
                         </p>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        {alert.resolved && (
-                          <span className="rounded-full bg-neutral-bg px-2.5 py-1 text-xs font-medium text-neutral">Opgelost</span>
+                        {alert.status !== "open" && (
+                          <span className="rounded-full bg-neutral-bg px-2.5 py-1 text-xs font-medium text-neutral">
+                            {ALERT_STATUS_LABELS[alert.status]}
+                          </span>
                         )}
                         <PriorityBadge priority={alert.priority} />
                       </div>

@@ -1,6 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import type { FeedbackType, Platform, Priority, Sentiment } from "@/lib/types";
+import type { AlertStatus, FeedbackType, Platform, Priority, Sentiment } from "@/lib/types";
 
 export type ReportPeriod = "week" | "month" | "quarter";
 
@@ -42,7 +42,7 @@ export interface ReportAlert {
   priority: Priority;
   increasePercentage: number;
   createdAt: Date;
-  resolved: boolean;
+  status: AlertStatus;
 }
 
 export interface ReportData {
@@ -155,7 +155,7 @@ export async function getReportData(companyId: string, period: ReportPeriod): Pr
       priority: alert.priority,
       increasePercentage: Number(alert.increasePercentage),
       createdAt: alert.createdAt,
-      resolved: alert.resolved,
+      status: alert.status,
     })),
   };
 }

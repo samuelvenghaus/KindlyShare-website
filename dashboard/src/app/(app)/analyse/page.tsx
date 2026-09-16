@@ -215,7 +215,7 @@ export default async function AnalysePage({
                 ) : (
                   <div className="space-y-4">
                     {data.aiSolutions.map((solution) => (
-                      <div key={solution.id} className={clsx("rounded-xl border border-border p-4", solution.resolved && "opacity-60")}>
+                      <div key={solution.id} className={clsx("rounded-xl border border-border p-4", solution.status === "resolved" && "opacity-60")}>
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div>
                             <p className="text-sm font-semibold text-foreground">{solution.topicLabel}</p>

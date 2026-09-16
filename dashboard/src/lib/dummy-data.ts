@@ -1,4 +1,4 @@
-import type { Platform, Sentiment } from "./types";
+import type { AlertStatus, Platform, Sentiment } from "./types";
 
 export const PLATFORM_LABELS: Record<Platform, string> = {
   google: "Google Reviews",
@@ -28,6 +28,12 @@ export const SENTIMENT_LABELS: Record<Sentiment, string> = {
   positive: "Positief",
   neutral: "Neutraal",
   negative: "Negatief",
+};
+
+export const ALERT_STATUS_LABELS: Record<AlertStatus, string> = {
+  open: "Open",
+  in_progress: "In behandeling",
+  resolved: "Afgehandeld",
 };
 
 export function formatTimeAgo(minutesAgo: number): string {

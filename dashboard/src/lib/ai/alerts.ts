@@ -27,7 +27,7 @@ export async function checkAlertThresholds(companyId: string): Promise<AlertWith
 
   for (const topic of topics) {
     const existingUnresolved = await prisma.alert.findFirst({
-      where: { companyId, topicId: topic.id, resolved: false },
+      where: { companyId, topicId: topic.id, status: { not: "resolved" } },
     });
     if (existingUnresolved) continue;
 

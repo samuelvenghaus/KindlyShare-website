@@ -15,6 +15,8 @@ export type FeedbackType = "praise" | "interest" | "problem" | "solution";
 
 export type Priority = "low" | "medium" | "high";
 
+export type AlertStatus = "open" | "in_progress" | "resolved";
+
 export interface NoteItem {
   id: string;
   authorName: string;

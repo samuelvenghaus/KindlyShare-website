@@ -38,6 +38,12 @@ enum Priority {
   high
 }
 
+enum AlertStatus {
+  open
+  in_progress
+  resolved
+}
+
 enum UserRole {
   owner
   member
@@ -102,16 +108,16 @@ model User {
 }
 
 model Invite {
-  id          String    @id @default(uuid())
-  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId   String    @map("company_id")
-  email       String
+  id         String    @id @default(uuid())
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId  String    @map("company_id")
+  email      String
   // Willekeurig, uniek token voor de publieke uitnodigingslink.
-  token       String    @unique
-  invitedBy   String?   @map("invited_by")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  expiresAt   DateTime  @map("expires_at")
-  acceptedAt  DateTime? @map("accepted_at")
+  token      String    @unique
+  invitedBy  String?   @map("invited_by")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  expiresAt  DateTime  @map("expires_at")
+  acceptedAt DateTime? @map("accepted_at")
 
   @@index([companyId])
   @@map("invites")
@@ -202,21 +208,21 @@ model ReviewTopic {
 }
 
 model Alert {
-  id                 String   @id @default(uuid())
-  company            Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId          String   @map("company_id")
-  topic              Topic?   @relation(fields: [topicId], references: [id], onDelete: SetNull)
-  topicId            String?  @map("topic_id")
-  reviewCount        Int      @map("review_count")
-  timeWindowDays     Int      @map("time_window_days")
-  increasePercentage Decimal  @map("increase_percentage") @db.Decimal(5, 1)
+  id                 String      @id @default(uuid())
+  company            Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId          String      @map("company_id")
+  topic              Topic?      @relation(fields: [topicId], references: [id], onDelete: SetNull)
+  topicId            String?     @map("topic_id")
+  reviewCount        Int         @map("review_count")
+  timeWindowDays     Int         @map("time_window_days")
+  increasePercentage Decimal     @map("increase_percentage") @db.Decimal(5, 1)
   priority           Priority
-  aiSuggestion       String?  @map("ai_suggestion")
-  createdAt          DateTime @default(now()) @map("created_at")
-  resolved           Boolean  @default(false)
+  aiSuggestion       String?     @map("ai_suggestion")
+  createdAt          DateTime    @default(now()) @map("created_at")
+  status             AlertStatus @default(open)
   // Teamlid dat deze alert is toegewezen om op te pakken (null = niet toegewezen).
-  assignedTo         User?    @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
-  assignedToId       String?  @map("assigned_to_id")
+  assignedTo         User?       @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  assignedToId       String?     @map("assigned_to_id")
   notes              Note[]
 
   @@index([companyId])
