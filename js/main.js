@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initNavToggle();
   initPricing();
+  initLoginPage();
 });
 
 function initNavToggle() {
@@ -70,5 +71,26 @@ function updatePricingDisplay(period) {
   document.querySelectorAll('.price-billed-note').forEach((el) => {
     el.style.visibility = period === 'yearly' ? 'visible' : 'hidden';
   });
+}
+
+function initLoginPage() {
+  const toggle = document.querySelector('.toggle-visibility');
+  if (!toggle) return;
+
+  const input = document.getElementById('login-password');
+  const eyeOpen = toggle.querySelector('.eye-open');
+  const eyeClosed = toggle.querySelector('.eye-closed');
+
+  toggle.addEventListener('click', () => {
+    const isPassword = input.type === 'password';
+    input.type = isPassword ? 'text' : 'password';
+    eyeOpen.style.display = isPassword ? 'none' : 'block';
+    eyeClosed.style.display = isPassword ? 'block' : 'none';
+  });
+
+  const form = document.querySelector('.login-form');
+  if (form) {
+    form.addEventListener('submit', (e) => e.preventDefault());
+  }
 }
 
