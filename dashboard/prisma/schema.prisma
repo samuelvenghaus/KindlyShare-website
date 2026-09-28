@@ -63,10 +63,24 @@ enum CampaignRecipientStatus {
   unsubscribed
 }
 
+enum Plan {
+  basic
+  genius
+  genius_plus
+}
+
 model Company {
   id                   String               @id @default(uuid())
   name                 String
   createdAt            DateTime             @default(now()) @map("created_at")
+  // Abonnement-status: plan = null betekent nog geen plan gekozen (redirect naar
+  // /kies-een-plan). Eenmaal gekozen wordt een activationCode gegenereerd en gemaild;
+  // planActivatedAt blijft null totdat die code is ingevoerd (redirect naar /activeer).
+  // Wordt vooralsnog handmatig gezet via het interne /api/admin/activate-company-endpoint,
+  // er is nog geen betaalintegratie.
+  plan                 Plan?
+  activationCode       String?              @map("activation_code")
+  planActivatedAt      DateTime?            @map("plan_activated_at")
   // Notificatie-instellingen bij nieuwe alerts (los van de vaste alert-drempel zelf).
   alertEmailEnabled    Boolean              @default(true) @map("alert_email_enabled")
   // Versleuteld opgeslagen (zelfde aanpak als OAuth-tokens): een Slack incoming-webhook-URL is een bearer secret.

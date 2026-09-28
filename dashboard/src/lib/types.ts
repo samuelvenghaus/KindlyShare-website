@@ -17,6 +17,8 @@ export type Priority = "low" | "medium" | "high";
 
 export type AlertStatus = "open" | "in_progress" | "resolved";
 
+export type Plan = "basic" | "genius" | "genius_plus";
+
 export interface NoteItem {
   id: string;
   authorName: string;

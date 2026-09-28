@@ -60,6 +60,49 @@ export async function sendAlertEmail(input: AlertEmailInput): Promise<void> {
   }
 }
 
+export interface PlanActivationEmailInput {
+  to: string;
+  companyName: string;
+  planLabel: string;
+  activationCode: string;
+  appUrl: string;
+}
+
+/** Verstuurt de activatiecode per e-mail nadat een plan handmatig is toegekend
+ * via /api/admin/activate-company (er is nog geen betaalintegratie). */
+export async function sendPlanActivationEmail(input: PlanActivationEmailInput): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.ALERT_EMAIL_FROM;
+  if (!apiKey || !from) return;
+
+  const html = `
+    <div style="font-family: sans-serif; max-width: 480px;">
+      <h2 style="margin-bottom: 4px;">Welkom bij KindlyShare ${input.planLabel}</h2>
+      <p style="color: #555;">Bedankt voor je aanmelding voor ${input.companyName}. Voer onderstaande code in om je account te activeren.</p>
+      <p style="font-size: 24px; font-weight: 700; letter-spacing: 2px; padding: 12px 16px; background: #f4f4f5; border-radius: 8px; display: inline-block;">${input.activationCode}</p>
+      <p><a href="${input.appUrl}/activeer" style="color: #6366f1;">Activeer je account →</a></p>
+    </div>
+  `.trim();
+
+  const response = await fetch(RESEND_API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [input.to],
+      subject: `Je activatiecode voor KindlyShare ${input.planLabel}`,
+      html,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Resend API-aanroep mislukt (${response.status}): ${await response.text()}`);
+  }
+}
+
 export interface TeamInviteEmailInput {
   to: string;
   companyName: string;

@@ -1,4 +1,4 @@
-import type { AlertStatus, Platform, Sentiment } from "./types";
+import type { AlertStatus, Plan, Platform, Sentiment } from "./types";
 
 export const PLATFORM_LABELS: Record<Platform, string> = {
   google: "Google Reviews",
@@ -34,6 +34,18 @@ export const ALERT_STATUS_LABELS: Record<AlertStatus, string> = {
   open: "Open",
   in_progress: "In behandeling",
   resolved: "Afgehandeld",
+};
+
+export const PLAN_LABELS: Record<Plan, string> = {
+  basic: "Basic",
+  genius: "Genius",
+  genius_plus: "Genius+",
+};
+
+export const PLAN_PRICES: Record<Plan, number> = {
+  basic: 40,
+  genius: 80,
+  genius_plus: 120,
 };
 
 export function formatTimeAgo(minutesAgo: number): string {
